@@ -5,6 +5,22 @@ import { collection, getDocs, updateDoc, doc, addDoc, deleteDoc } from "firebase
 
 //PARA USUARIOS
 import { getAuth } from "firebase/auth";
+
+/**
+ * Controlador para obtener usuarios y sus carreras
+ * 1. Obtiene todos los documentos de la colección "Usuarios" en una sola operación
+ * 2. Itera sobre cada usuario para:
+ *    a. Determinar si es Profesor o Estudiante
+ *    b. Buscar su carrera correspondiente dentro del mismo conjunto de usuarios
+ *    c. Construir objeto con datos relevantes
+ * 3. Maneja relaciones internas:
+ *    - Usa documentos de tipo carrera almacenados en la misma colección Usuarios
+ *    - Relaciona mediante ID referencia en campo 'carrera'
+ * 4. Estructura respuesta uniforme:
+ *    - Incluye todos los usuarios con datos básicos
+ *    - Añade nombre de carrera para Profesores/Estudiantes
+ */
+
 export const obtenerUsuarios = async (req, res) => {
     const usuarios = [];
 
@@ -49,6 +65,15 @@ export const obtenerUsuarios = async (req, res) => {
     }
 };
 
+/**
+ * Controlador para actualizar el rol de un usuario
+ * 1. Recibe ID de usuario y nuevo rol desde el cuerpo de la solicitud
+ * 2. Busca el documento del usuario en la colección "Usuarios"
+ * 3. Actualiza el campo 'tipoUsuario' con el nuevo rol
+ * 4. Maneja errores y envía respuesta adecuada
+ * 
+ * 
+ */
 export const actualizarRol = async (req, res) => {
     const { idUsuario, nuevoRol } = req.body; // Asegúrate de que el ID y el nuevo rol se envían en el cuerpo de la solicitud
     try {
@@ -62,6 +87,15 @@ export const actualizarRol = async (req, res) => {
     }
 }
 
+/** 
+ * Controlador para actualizar un usuario
+ * 1. Recibe nombre de usuario, campo a actualizar y nuevo valor desde el cuerpo de la solicitud
+ * 2. Busca el documento del usuario en la colección "Usuarios"
+ * 3. Actualiza el campo especificado con el nuevo valor
+ * 4. Maneja errores y envía respuesta adecuada
+ *  
+ * 
+*/
 export const actualizarUsuario = async (req, res) => { 
     const { nombreUsuario, campoSeleccionado, nuevoValor } = req.body;
     try {
@@ -93,7 +127,14 @@ export const actualizarUsuario = async (req, res) => {
     }
 }
 
-
+/**
+ * Controlador para eliminar un usuario
+ * 1. Recibe ID de usuario desde la consulta de la solicitud
+ * 2. Busca el documento del usuario en la colección "Usuarios"
+ * 3. Elimina el documento
+ * 4. Maneja errores y envía respuesta adecuada
+ * 
+ */
 export const eliminarUsuario = async (req, res) => {
     const id = req.query.id; // Asegúrate de que el ID se envía en el cuerpo de la solicitud
     try {
@@ -105,6 +146,14 @@ export const eliminarUsuario = async (req, res) => {
     }
 };
 
+/** 
+ * Controlador para obtener carreras
+ * 1. Obtiene todos los documentos de la colección "Usuarios"
+ * 2. Filtra los documentos para encontrar aquellos que son de tipo "Escuela" y tienen una carrera asignada
+ * 3. Construye una lista de carreras únicas usando un Set
+ * 4. Envía la lista de carreras como respuesta
+ * 
+*/
 export const obtenerCarreras = async (req, res) => {
     try {
       const snapshot = await getDocs(collection(db, "Usuarios"));
@@ -127,7 +176,15 @@ export const obtenerCarreras = async (req, res) => {
 
 
 //PARA OFERTAS 
-
+/**
+ * Controlador para obtener ofertas
+ * 1. Obtiene todos los documentos de la colección "Asistencias"
+ * 2. Itera sobre cada documento para construir una lista de ofertas
+ * 3. Cada oferta incluye ID, nombre, tipo, estado, cantidad de estudiantes y horas
+ * 4. Envía la lista de ofertas como respuesta
+ *  
+ *  
+ */
 export const obtenerOfertas = async (req, res) => {
     try {
         const Asistenciassnapshot = await getDocs(collection(db, "Asistencias"));
@@ -151,6 +208,15 @@ export const obtenerOfertas = async (req, res) => {
     }
 }
 
+/**
+ * Controlador para aceptar una oferta
+ * 1. Recibe ID de oferta desde el cuerpo de la solicitud
+ * 2. Busca el documento de la oferta en la colección "Asistencias"
+ * 3. Actualiza el campo 'estado' a "Abierta"
+ * 4. Maneja errores y envía respuesta adecuada
+ *  
+ *  
+ */
 export const aceptarOferta = async (req, res) => {
     const { id } = req.body; // Asegúrate de que el ID se envía en el cuerpo de la solicitud
     console.log("ID de la oferta a aceptar:", id);
@@ -166,6 +232,15 @@ export const aceptarOferta = async (req, res) => {
     }
 }
 
+/**
+ * Controlador para eliminar una oferta
+ * 1. Recibe ID de oferta desde la consulta de la solicitud
+ * 2. Busca el documento de la oferta en la colección "Asistencias"
+ * 3. Actualiza el campo 'estado' a "Cerrado"
+ * 4. Maneja errores y envía respuesta adecuada
+ * 
+ *  
+ */
 export const eliminarOferta = async (req, res) => {
     const id = req.query.id;// Asegúrate de que el ID se envía en el cuerpo de la solicitud
     try {
@@ -180,6 +255,14 @@ export const eliminarOferta = async (req, res) => {
     }
 }
 
+/** 
+ * Controlador para actualizar una oferta
+ * 1. Recibe nombre de usuario, campo a actualizar y nuevo valor desde el cuerpo de la solicitud
+ * 2. Busca el documento de la oferta en la colección "Asistencias"
+ * 3. Actualiza el campo especificado con el nuevo valor
+ * 4. Maneja errores y envía respuesta adecuada
+ * 
+ */
 export const actualizarOferta = async (req, res) => {
     const { nombreUsuario, campoSeleccionado, nuevoValor } = req.body;
     try {
@@ -213,6 +296,14 @@ export const actualizarOferta = async (req, res) => {
 
 //PARA MONITOREO DE ASISTENCIAS
 
+/**
+ * Controlador para monitorear asistencias
+ * 1. Obtiene todos los documentos de la colección "Asistencias"
+ * 2. Itera sobre cada documento para construir una lista de asistencias
+ * 3. Cada asistencia incluye ID, nombre del programa, semestre, responsable y estado
+ * 4. Envía la lista de asistencias como respuesta
+ *
+ */
 export const monitoreoAsistencia = async (req, res) => {
 
     try{

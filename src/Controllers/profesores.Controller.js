@@ -2,6 +2,17 @@ import { Timestamp } from 'firebase/firestore';
 import { db, app } from "../Services/fireBaseConnect.js";
 import { collection, getDocs, updateDoc, doc, getDoc, addDoc, query, where, deleteDoc, arrayUnion} from "firebase/firestore";
 
+/** 
+ * Controlador para obtener la información de un profesor específico.
+ * 1. Obtiene el ID del profesor desde los parámetros de la URL (req.params).
+ * 2. Intenta acceder al documento correspondiente en la colección "Usuarios" de Firestore.
+ * 3. Si el documento existe:
+ *    - Filtra la propiedad sensible 'contrasena' para no enviarla al cliente
+ *    - Devuelve el resto de la información del usuario junto con el ID del documento
+ * 4. Si el documento no existe, devuelve un error 404
+ * 5. Maneja posibles errores durante el proceso devolviendo un error 500
+ * 
+*/
 
 export const getInfoProfesores = async (req, res) => {
   const { id } = req.params;
@@ -20,8 +31,19 @@ export const getInfoProfesores = async (req, res) => {
     console.error("Error getting document:", error);
     res.status(500).json({ message: "Error getting document" });
   }
-}
 
+}
+/** 
+ * Controlador para actualizar la información de un profesor específico.
+ * 1. Obtiene el ID del profesor desde los parámetros de la URL (req.params).
+ * 2. Extrae los datos del cuerpo de la solicitud (req.body).
+ * 3. Intenta acceder al documento correspondiente en la colección "Usuarios" de Firestore.
+ * 4. Actualiza el documento con los nuevos datos proporcionados.
+ * 5. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 6. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 7. Maneja posibles errores durante el proceso devolviendo un error 500
+ * 
+*/
 export const updateInfoProfesores = async (req, res) => {
     const { id } = req.params;
     const { nombre, correo, telefono, sede, password } = req.body;
@@ -41,6 +63,16 @@ export const updateInfoProfesores = async (req, res) => {
     }
 }
 
+/**
+ * Controlador para obtener todos los cursos de un profesor específico.
+ *  1. Obtiene el ID del profesor desde los parámetros de la URL (req.params).
+ *  2. Intenta acceder a la colección "Cursos" de Firestore.
+ *  3. Realiza una consulta para obtener todos los cursos donde el campo "profesor" sea igual al ID del profesor.
+ *  4. Si se encuentran cursos, los devuelve en la respuesta con un estado 200.
+ *  5. Si no se encuentran cursos, devuelve un mensaje de error 404.
+ *  6. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+ */
 export const getAllCourses = async (req, res) => {
 
     const { id } = req.params;
@@ -61,6 +93,16 @@ export const getAllCourses = async (req, res) => {
 
 }
 
+/**
+ * Controlador para obtener el historial de asistencias de un profesor específico.
+ * 1. Obtiene el ID del profesor desde los parámetros de la URL (req.params).
+ * 2. Intenta acceder a la colección "Asistencias" de Firestore.
+ * 3. Realiza una consulta para obtener todos los cursos donde el campo "personaACargo" sea igual al ID del profesor.
+ * 4. Si se encuentran cursos, los devuelve en la respuesta con un estado 200.
+ * 5. Si no se encuentran cursos, devuelve un mensaje de error 404.
+ * 6. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+ */
 export const getAllHistorial = async (req, res) => {
     const { id } = req.params;
     try {
@@ -80,6 +122,19 @@ export const getAllHistorial = async (req, res) => {
 
 }
 
+/** 
+ * Controlador para obtener información de asistencias relacionadas con un profesor específico.
+ * 1. Obtiene el ID del profesor desde los parámetros de la URL
+ * 2. Busca en la colección "Asistencias" todas las asistencias donde el profesor es personaACargo
+ * 3. Si no encuentra asistencias, devuelve error 404
+ * 4. Divide los IDs encontrados en grupos de 10 (límite de cláusula 'in' en Firestore)
+ * 5. Consulta en "AsistenciasAsignadas" las relaciones con esos IDs por bloques
+ * 6. Combina datos de asignaciones con sus respectivas asistencias
+ * 7. Busca asistencias cerradas del mismo profesor
+ * 8. Filtra las cerradas que no tienen versión asignada mediante comparación de títulos
+ * 9. Devuelve estructura organizada con asignaciones activas y cerradas filtradas
+ * 
+ */
 export const getUserInfoByAsistencias = async (req, res) => {
   const { id } = req.params;
 
@@ -147,7 +202,17 @@ export const getUserInfoByAsistencias = async (req, res) => {
 };
 
 
-
+/**
+ * Controlador para insertar una nueva oferta de asistencia.
+  * 1. Extrae los datos del cuerpo de la solicitud (req.body).
+  * 2. Formatea las fechas a un formato específico (DD/MM/YYYY).
+  * 3. Intenta acceder a la colección "Asistencias" de Firestore.
+  * 4. Crea un nuevo documento con los datos proporcionados.
+  * 5. Si la inserción es exitosa, devuelve un mensaje de éxito y el ID del nuevo documento.
+  * 6. Si ocurre un error durante la inserción, devuelve un error 500.
+  * 7. Maneja posibles errores durante el proceso devolviendo un error 500.
+  * 
+ */
 
 export const insertNewOferta = async (req, res) => {
   const {
@@ -215,6 +280,15 @@ export const insertNewOferta = async (req, res) => {
   }
 }
 
+/** 
+ * Controlador para obtener asistencias relacionadas con un profesor específico.
+ * 1. Obtiene el ID del profesor desde los parámetros de la URL (req.params).
+ * 2. Intenta acceder a la colección "Asistencias" de Firestore.
+ * 3. Realiza una consulta para obtener todas las asistencias donde el campo "personaACargo" sea igual al ID del profesor.
+ * 4. Si se encuentran asistencias, las devuelve en la respuesta con un estado 200.
+ * 5. Si no se encuentran asistencias, devuelve un mensaje de error 404.
+ * 6. Maneja posibles errores durante el proceso devolviendo un error 500.
+ */
 export const getAsistenciasByProfesor = async (req, res) => {
     const { id } = req.params;
     try {
@@ -236,6 +310,18 @@ export const getAsistenciasByProfesor = async (req, res) => {
     }
 }
 
+/** 
+ * Controlador para obtener solicitudes relacionadas con asistencias.
+ * 1. Obtiene todas las asistencias de la colección "Asistencias".
+ * 2. Normaliza los títulos de los programas de las asistencias.
+ * 3. Si no hay títulos registrados, devuelve un error 404.
+ * 4. Obtiene todas las solicitudes de la colección "Solicitudes".
+ * 5. Filtra las solicitudes que tienen títulos relacionados con las asistencias.
+ * 6. Si no se encuentran solicitudes relacionadas, devuelve un error 404.
+ * 7. Devuelve las solicitudes relacionadas en la respuesta con un estado 200.
+ * 8. Maneja posibles errores durante el proceso devolviendo un error 500.
+ *  
+*/
 export const getSolicitudesRelacionadasConAsistencias = async (req, res) => {
   try {
     const asistenciasSnapshot = await getDocs(collection(db, "Asistencias"));
@@ -282,6 +368,18 @@ export const getSolicitudesRelacionadasConAsistencias = async (req, res) => {
   }
 };
 
+
+/**
+ * Controlador para actualizar una oferta de asistencia.
+ * 1. Obtiene el ID de la oferta desde los parámetros de la URL (req.params).
+ * 2. Extrae los datos del cuerpo de la solicitud (req.body).
+ * 3. Intenta acceder al documento correspondiente en la colección "Asistencias" de Firestore.
+ * 4. Actualiza el documento con los nuevos datos proporcionados.
+ * 5. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 6. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 7. Maneja posibles errores durante el proceso devolviendo un error 500.
+ *  
+ */
   export const updateOferta = async (req, res) => {
     const { id } = req.params; 
     const updatedData = req.body; 
@@ -297,6 +395,16 @@ export const getSolicitudesRelacionadasConAsistencias = async (req, res) => {
     }
   }
 
+  /**
+  * Controlador para cerrar una oferta de asistencia.
+  * 1. Obtiene el ID de la oferta desde los parámetros de la URL (req.params).
+  * 2. Intenta acceder al documento correspondiente en la colección "Asistencias" de Firestore.
+  * 3. Actualiza el estado de la oferta a "Cerrado".
+  * 4. Si la actualización es exitosa, devuelve un mensaje de éxito.
+  * 5. Si ocurre un error durante la actualización, devuelve un error 500.
+  * 6. Maneja posibles errores durante el proceso devolviendo un error 500.
+  *   
+   */
   export const closeOferta = async (req, res) => {
     const { id } = req.params;
     console.log("ID de la oferta a cerrar:", id); 
@@ -312,6 +420,16 @@ export const getSolicitudesRelacionadasConAsistencias = async (req, res) => {
     }
 };
 
+/** 
+ * Controlador para eliminar una oferta de asistencia.
+ * 1. Obtiene el ID de la oferta desde los parámetros de la URL (req.params).
+ * 2. Intenta acceder al documento correspondiente en la colección "Ofertas" de Firestore.
+ * 3. Elimina el documento de la colección.
+ * 4. Si la eliminación es exitosa, devuelve un mensaje de éxito.
+ * 5. Si ocurre un error durante la eliminación, devuelve un error 500.
+ * 6. Maneja posibles errores durante el proceso devolviendo un error 500.
+ *  
+ */
 export const deleteOferta = async (req, res) => {
     const { id } = req.params;
 
@@ -325,7 +443,16 @@ export const deleteOferta = async (req, res) => {
     }
 };
 
-
+/** 
+ * Controlador para agregar desempeño y retroalimentación a una asistencia asignada.
+ * 1. Obtiene el ID de la asistencia desde los parámetros de la URL (req.params).
+ * 2. Extrae el desempeño y la retroalimentación del cuerpo de la solicitud (req.body).
+ * 3. Intenta acceder al documento correspondiente en la colección "AsistenciasAsignadas" de Firestore.
+ * 4. Actualiza el documento con los nuevos datos proporcionados.
+ * 5. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 6. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 7. Maneja posibles errores durante el proceso devolviendo un error 500.
+ */
 export const addDesempeno = async (req, res) => {
     const { id } = req.params; 
     const { desempeno, retroalimentacion } = req.body; 
@@ -346,7 +473,19 @@ export const addDesempeno = async (req, res) => {
     }
 };
 
-
+/** 
+ * Controlador para buscar la carrera asociada a un usuario específico.
+ * 1. Obtiene el ID del usuario desde los parámetros de la URL (req.params).  
+ * 2. Intenta acceder al documento correspondiente en la colección "Usuarios" de Firestore.
+ * 3. Si el documento existe, filtra la propiedad sensible 'contrasena' para no enviarla al cliente.
+ * 4. Verifica si el campo 'carrera' existe y no está vacío.
+ * 5. Si la carrera existe, busca el documento correspondiente en la colección "Usuarios" usando el ID de la carrera.
+ * 6. Si se encuentra la carrera, devuelve la información del usuario junto con el nombre de la carrera.
+ * 7. Si no se encuentra la carrera, devuelve un error 404.
+ * 8. Si el documento no existe, devuelve un error 404.
+ * 9. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+*/
 export const searchCarreraByuserId = async (req, res) => {
   const { id } = req.params; 
   try {
@@ -383,6 +522,18 @@ export const searchCarreraByuserId = async (req, res) => {
   }
 };
 
+/**
+ * Controlador para actualizar el estado de una postulación.
+ * 1. Obtiene el ID del usuario desde los parámetros de la URL (req.params).
+ * 2. Extrae el título, estado y reunión del cuerpo de la solicitud (req.body).
+ * 3. Intenta acceder a la colección "Solicitudes" de Firestore.
+ * 4. Realiza una consulta para encontrar la solicitud correspondiente al usuario y título.
+ * 5. Si se encuentra la solicitud, actualiza el estado y la reunión según los datos proporcionados.
+ * 6. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 7. Si no se encuentra la solicitud, devuelve un error 404.
+ * 8. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 9. Maneja posibles errores durante el proceso devolviendo un error 500.
+ */
 export const updatePostulacionAcciones = async (req, res) => {
   const { userId } = req.params;
   const { titulo, estado, reunion } = req.body;
@@ -415,6 +566,20 @@ export const updatePostulacionAcciones = async (req, res) => {
   }
 };
 
+
+/**
+ * Controlador para actualizar el feedback de una asistencia.
+ * 1. Obtiene el tipo y ID de la asistencia desde los parámetros de la URL (req.params).
+ * 2. Extrae la retroalimentación y el desempeño del cuerpo de la solicitud (req.body).
+ * 3. Intenta acceder al documento correspondiente en la colección "AsistenciasAsignadas" o "Asistencias" de Firestore.
+ * 4. Si el tipo es "asignada", busca en "AsistenciasAsignadas", de lo contrario, busca en "Asistencias".
+ * 5. Si el documento existe, actualiza la retroalimentación y el desempeño.
+ * 6. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 7. Si el documento no existe, devuelve un error 404.
+ * 8. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 9. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+  */
 export const updateAsistenciaFeedback = async (req, res) => {
   const { type, id } = req.params;
   const { retroalimentacion, desempeno } = req.body;
@@ -455,7 +620,19 @@ export const updateAsistenciaFeedback = async (req, res) => {
   }
 };
 
-
+/** 
+ * Controlador para asignar un estudiante a una asistencia y eliminar su solicitud.
+ * 1. Extrae los datos del cuerpo de la solicitud (req.body).
+ * 2. Intenta acceder a la colección "Asistencias" de Firestore.
+ * 3. Filtra las asistencias abiertas por título.
+ * 4. Si no se encuentra ninguna asistencia abierta, devuelve un error 404.
+ * 5. Si se encuentra una asistencia, crea un nuevo documento en "AsistenciasAsignadas" con los datos del estudiante.
+ * 6. Busca y elimina las solicitudes del estudiante en la colección "Solicitudes".
+ * 7. Si la asignación y eliminación son exitosas, devuelve un mensaje de éxito.
+ * 8. Si ocurre un error durante el proceso, devuelve un error 500.
+ * 9. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+ */
 export const assignAndRemoveSolicitud = async (req, res) => {
   const student = req.body;
   console.log("[assignAndRemoveSolicitud] body:", student);
@@ -523,6 +700,16 @@ export const assignAndRemoveSolicitud = async (req, res) => {
   }
 };
 
+/** 
+ * Controlador para establecer una reunión en una solicitud de postulación.
+ * 1. Obtiene el ID de la solicitud desde los parámetros de la URL (req.params).
+ * 2. Intenta acceder al documento correspondiente en la colección "Solicitudes" de Firestore.
+ * 3. Actualiza el campo "reunion" a true en el documento de la solicitud.
+ * 4. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 5. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 6. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+*/
 export const setSolicitudReunion = async (req, res) => {
   const { id } = req.params;
   try {
@@ -535,6 +722,16 @@ export const setSolicitudReunion = async (req, res) => {
   }
 };
 
+/** 
+ * Controlador para rechazar una postulación.
+ * 1. Obtiene el ID de la postulación desde los parámetros de la URL (req.params).
+ * 2. Intenta acceder al documento correspondiente en la colección "Solicitudes" de Firestore.
+ * 3. Actualiza el campo "estado" a "Rechazado" en el documento de la postulación.
+ * 4. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 5. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 6. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+ */
 export const rechazarPostulacion = async (req, res) => {
   const { id } = req.params;
 
@@ -549,7 +746,17 @@ export const rechazarPostulacion = async (req, res) => {
   }
 };
 
-
+/** 
+ * Controlador para actualizar el seguimiento de una asistencia asignada.
+ * 1. Obtiene el ID de la asistencia desde los parámetros de la URL (req.params).
+ * 2. Extrae los datos del cuerpo de la solicitud (req.body).
+ * 3. Intenta acceder al documento correspondiente en la colección "AsistenciasAsignadas" de Firestore.
+ * 4. Actualiza el documento con los nuevos datos proporcionados.
+ * 5. Si la actualización es exitosa, devuelve un mensaje de éxito.
+ * 6. Si ocurre un error durante la actualización, devuelve un error 500.
+ * 7. Maneja posibles errores durante el proceso devolviendo un error 500.
+ * 
+*/
 export const updateSeguimiento = async (req, res) => {
   const { id } = req.params;
   const {
