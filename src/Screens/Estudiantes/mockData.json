@@ -1,0 +1,172 @@
+{
+    "contactInfo": {
+      "correo": "sanchaves@itcr.ac.cr",
+      "telefono": "87789002",
+      "nombreResponsable": "Santiago",
+      "apellidosResponsable": "Chaves Garbanzo",
+      "escuelaDepartamento": "Escuela de Computación",
+      "sede": "Campus Tecnológico Central Cartago"
+    },
+    "options": [
+      "Registro y edición del perfil",
+      "Gestión de asignaturas y proyectos",
+      "Evaluación y retroalimentación",
+      "Creación de nuevas ofertas académicas",
+      "Edición y eliminación de ofertas",
+      "Gestión de Postulaciones",
+      "Seguimiento de estudiantes"
+    ],
+    "gestionAsignaturas": {
+      "courses": [
+        {
+          "id": 101,
+          "nombre": "Introducción a la Programación",
+          "codigo": "IC1802",
+          "creditos": 3,
+          "semestre": 1,
+          "aula": "B3-07",
+          "profesor": "Santiago Chaves Garbanzo"
+        },
+        {
+          "id": 102,
+          "nombre": "Estructuras de Datos",
+          "codigo": "IC2001",
+          "creditos": 4,
+          "semestre": 2,
+          "aula": "B3-08",
+          "profesor": "Santiago Chaves Garbanzo"
+        }
+      ],
+      "proyectos": [
+        {
+          "id": 201,
+          "nombre": "Proyecto de Software",
+          "codigo": "IC3001",
+          "creditos": 3,
+          "semestre": 3,
+          "aula": "B3-09",
+          "profesor": "Santiago Chaves Garbanzo"
+        },
+        {
+          "id": 202,
+          "nombre": "Desarrollo de Aplicaciones Móviles",
+          "codigo": "IC4001",
+          "creditos": 4,
+          "semestre": 4,
+          "aula": "B3-10",
+          "profesor": "Santiago Chaves Garbanzo"
+        }
+      ],
+      "historial": [
+        {
+          "id": 301,
+          "nombre": "Tomas Alvarez",
+          "carnet": "2022124567",
+          "tipo": "Tutoría",
+          "curso": "Estructuras de Datos",
+          "semestre": "2",
+          "estado": "Completado",
+          "año": "2023",
+          "comentario": "",
+          "desempeño": ""
+        },
+        {
+          "id": 302,
+          "nombre": "Maria Gonzalez",
+          "carnet": "2022123456",
+          "tipo": "Asistencia",
+          "curso": "Introducción a la Programación",
+          "semestre": "1",
+          "estado": "En Progreso",
+          "año": "2025",
+          "comentario": "",
+          "desempeño": ""
+        }
+      ]
+    },
+    "ofertas": [
+      {
+        "id": 1,
+        "nombre": "Asistencia para Bases de datos II",
+        "estudiantes": 3,
+        "profesor": "Santiago Chaves",
+        "semestre": 2,
+        "beneficio": "Descuento en matrícula",
+        "descripcion": "Se requiere asistencia para el curso de Bases de Datos II.",
+        "tipo": "Asistencia",
+        "horario": "Lunes y miércoles de 1 a 3 PM",
+        "vacantes": 3,
+        "horasSemanal": 6,
+        "fechaInicio": "2025-04-01",
+        "fechaCierre": "2025-06-30",
+        "requisitos": "Conocimientos básicos en SQL.",
+        "objetivos": "Apoyar y reforzar el conocimiento en Bases de datos II."
+      },
+      {
+        "id": 2,
+        "nombre": "Tutor para Elementos de Computación",
+        "estudiantes": 5,
+        "profesor": "Laura Gómez",
+        "semestre": 1,
+        "beneficio": "Certificado",
+        "descripcion": "Se busca tutor para el curso de Elementos de Computación.",
+        "tipo": "Tutoría",
+        "horario": "Martes y jueves de 8 a 10 AM",
+        "vacantes": 5,
+        "horasSemanal": 4,
+        "fechaInicio": "2025-05-01",
+        "fechaCierre": "2025-07-15",
+        "requisitos": "Conocimientos básicos en hardware y software.",
+        "objetivos": "Acompañamiento y refuerzo en el curso."
+      },
+      {
+        "id": 3,
+        "nombre": "Asistencia para Programación Avanzada",
+        "estudiantes": 2,
+        "profesor": "Carlos Rojas",
+        "semestre": 3,
+        "beneficio": "Acceso a talleres avanzados",
+        "descripcion": "Se requiere asistencia en el curso de Programación Avanzada.",
+        "tipo": "Asistencia",
+        "horario": "Viernes de 2 a 5 PM",
+        "vacantes": 2,
+        "horasSemanal": 3,
+        "fechaInicio": "2025-05-15",
+        "fechaCierre": "2025-07-30",
+        "requisitos": "Experiencia en programación orientada a objetos.",
+        "objetivos": "Refuerzo en el desarrollo de proyectos."
+      }
+    ],
+    "postulacionesData": [
+      {
+        "id": 1,
+        "nombre": "Jeffer",
+        "experiencia": "Asistencia",
+        "carrera": "Computación",
+        "nivel": "Principiante",
+        "ponderado": 89.5,
+        "cursosAprobados": 27,
+        "estado": "Aprobado"
+      },
+      {
+        "id": 2,
+        "nombre": "Tomas",
+        "experiencia": "Tutoría",
+        "carrera": "Computación",
+        "nivel": "Principiante",
+        "ponderado": 75.8,
+        "cursosAprobados": 20,
+        "estado": "En espera"
+      },
+      {
+        "id": 3,
+        "nombre": "Maria",
+        "experiencia": "Asistencia",
+        "carrera": "Sistemas",
+        "nivel": "Intermedio",
+        "ponderado": 82.0,
+        "cursosAprobados": 25,
+        "estado": "Aprobado"
+      }
+    ]
+  }
