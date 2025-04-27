@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState } from 'react';
 import {
   View,
@@ -12,7 +13,13 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../Style/Administradores/crearUsuario';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente CrearUsuario - Pantalla para crear un nuevo usuario
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador crear un nuevo usuario, especificando su nombre, correo, carrera, teléfono,
+// departamento y rol.
 const CrearUsuario = () => {
+  // Hooks para manejar la navegación
   const navigation = useNavigation();
 
   // Estados para cada campo
@@ -23,6 +30,9 @@ const CrearUsuario = () => {
   const [departamento, setDepartamento] = useState('');
   const [rol, setRol] = useState('Estudiante');
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para crear un nuevo usuario
+  //---------------------------------------------------------------------------------------------------------------
   const crearUsuario = () => {
     if (!nombre || !correo || !carrera || !telefono || !departamento || !rol) {
       Alert.alert('Faltan datos', 'Por favor complete todos los campos.');
@@ -42,6 +52,10 @@ const CrearUsuario = () => {
     navigation.goBack();
   };
 
+
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del formulario de creación de usuario
+  //---------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container}>
       {/* Header */}

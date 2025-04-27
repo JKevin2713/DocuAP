@@ -1,7 +1,15 @@
+// Importaciones necesarias
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { modalStyles } from '../../Style/Profesores/ofertaModal';	
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente OfertaModal - Pantalla modal para mostrar detalles de una oferta
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor ver los detalles de una oferta específica.
+// Incluye información como el nombre de la oferta, el número de estudiantes, el semestre, el beneficio,
+// la descripción, los objetivos, el horario, las vacantes, las horas por semana, la fecha de inicio y cierre,
+// y los requisitos.
 const OfertaModal = ({ visible, oferta, contactInfo, onClose }) => {
   if (!oferta) return null;
   return (

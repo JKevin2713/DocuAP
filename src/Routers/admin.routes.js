@@ -1,6 +1,4 @@
-/** 
- * se importan desde el controlador las funciones necesarias para el funcionamiento del sistema
-*/
+// Se importan desde el controlador las funciones necesarias para la gestión de usuarios y ofertas
 import {Router} from "express"
 import { obtenerUsuarios,
         actualizarRol,
@@ -43,5 +41,5 @@ router.put('/admin/actualizarOferta', actualizarOferta);
 router.get('/admin/monitoreoAsistencia', monitoreoAsistencia);
 //---------------------------------------------------------------------------------------------------------------
 // Exportación del router para ser utilizado en el servidor principal
-
+// ---------------------------------------------------------------------------------------------------------------
 export default router;

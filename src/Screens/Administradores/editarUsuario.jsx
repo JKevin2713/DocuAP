@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,8 +14,13 @@ import { styles } from '../../Style/Administradores/editarUsuario';
 import URL from '../../Services/url';
 import axios from 'axios';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente EditarUsuario - Pantalla para editar la información de un usuario
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador editar la información de un usuario específico, como nombre, correo, carrera y teléfono.
 
 const EditarUsuario = () => {
+  // Definición de estados y hooks
   const [carreras, setCarreras] = useState([]);
   const [campoSeleccionado, setCampoSeleccionado] = useState('');
   const [nuevoValor, setNuevoValor] = useState('');
@@ -30,6 +36,11 @@ const EditarUsuario = () => {
   } = route.params || {};
 
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar la lista de carreras al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener la lista de carreras disponibles y se almacenan en el estado correspondiente.
+  //
   useEffect(() => {
     const obtenerCarreras = async () => {
       try {
@@ -44,6 +55,14 @@ const EditarUsuario = () => {
     obtenerCarreras();
   }, []);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para guardar los cambios realizados en la información del usuario
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos actualizados del usuario al servidor para su almacenamiento.
+  // Se utiliza un endpoint específico para esta acción.
+  // Se valida que el campo seleccionado y el nuevo valor no estén vacíos antes de realizar la llamada a la API.
+  // Si la llamada es exitosa, se muestra un mensaje de confirmación y se navega de regreso a la pantalla anterior.
+  // Si ocurre un error, se muestra un mensaje de error.  
   const guardarCambios = async () => {
     if (!campoSeleccionado || !nuevoValor) {
       alert('Por favor seleccione un campo y escriba un nuevo valor.');
@@ -76,6 +95,11 @@ const EditarUsuario = () => {
     navigation.goBack();
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para obtener el placeholder del campo editable según el campo seleccionado
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función devuelve un texto de placeholder específico para cada campo editable.
+  // Se utiliza para guiar al usuario sobre qué tipo de información debe ingresar en el campo correspondiente.
   const obtenerPlaceholder = () => {
     switch (campoSeleccionado) {
       case 'nombre': return 'Nuevo nombre';
@@ -86,6 +110,9 @@ const EditarUsuario = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del formulario de edición de usuario
+  //---------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container}>
       {/* Header */}

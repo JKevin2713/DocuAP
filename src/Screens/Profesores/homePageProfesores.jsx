@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,11 +14,16 @@ import { styles } from '../../Style/Profesores/homePageProfesores';
 import URL from '../../Services/url';
 import axios from 'axios';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente HomePage - Pantalla principal para profesores
+//---------------------------------------------------------------------------------------------------------------
 const HomePage = () => {
+  // Hooks para manejar la navegación y la ruta actual
   const navigation = useNavigation();
   const route = useRoute();
   const { userId } = route.params;
 
+  // Definición de estados para manejar la información del profesor y las opciones de navegación
   const [contactInfo, setContactInfo] = useState({});
   const [options, setOptions] = useState([]);
   const [carreraId, setCarreraId] = useState('');
@@ -25,6 +31,9 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar la obtención de información del profesor
+  //---------------------------------------------------------------------------------------------------------------
   const handleInformacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -43,6 +52,9 @@ const HomePage = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar la obtención de información de la carrera
+  //---------------------------------------------------------------------------------------------------------------
   const handleCarreras = async (id) => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -67,7 +79,16 @@ const HomePage = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar la información del profesor al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener la información del profesor y se almacena en el estado correspondiente.
+  // También se obtiene la información de la carrera asociada al profesor.
+  // Se maneja el estado de carga y posibles errores durante la solicitud.
+  // Se utiliza un efecto secundario para realizar la llamada a la API al montar el componente.
+
   useEffect(() => {
+    // Función para obtener la información del profesor y la carrera
     const fetchData = async () => {
       try {
         const data = await handleInformacion();
@@ -96,8 +117,13 @@ const HomePage = () => {
     if (carrera !== null) {
       console.log('Carrera actualizada en estado:', carrera);
     }
+    // espera la carrera para que se cargue antes de continuar
   }, [carrera]);
 
+  
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
   
   if (loading) {
     return (

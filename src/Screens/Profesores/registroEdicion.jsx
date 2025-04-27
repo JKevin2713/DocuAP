@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -12,11 +13,17 @@ import { styles } from '../../Style/Profesores/registroEdicion';
 import axios from 'axios';
 import URL from '../../Services/url';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente RegistroEdicion - Pantalla para registrar y editar datos de profesores
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor registrar y editar su información personal y de contacto.
 const RegistroEdicion = () => {
+  // Hooks para manejar la navegación y la ruta actual
   const route = useRoute();
   const navigation = useNavigation();
   const { contactInfo, carrera, userId } = route.params;
 
+  // Definición de estados para los campos del formulario
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [telefono, setTelefono] = useState('');
@@ -26,6 +33,11 @@ const RegistroEdicion = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  //---------------------------------------------------------------------------------------------------------------
+// useEffect para cargar la información del contacto al montar el componente
+//---------------------------------------------------------------------------------------------------------------
+  // Se inicializan los campos del formulario con la información del contacto si está disponible.
+  // Esto permite al profesor ver y editar su información existente.
   useEffect(() => {
     if (contactInfo) {
       setNombre(contactInfo.nombre || '');
@@ -35,6 +47,10 @@ const RegistroEdicion = () => {
     }
   }, [contactInfo]);
 
+  //---------------------------------------------------------------------------------------------------------------
+// Función para guardar los cambios realizados en el formulario
+//---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos editados al servidor para actualizar la información del profesor.  
   const guardarCambios = async () => {
     if (showPasswordSection) {
       if (!password || !confirmPassword) {
@@ -66,8 +82,16 @@ const RegistroEdicion = () => {
     }
   };
 
+  //
+//---------------------------------------------------------------------------------------------------------------
+// Función para regresar a la pantalla anterior
+//---------------------------------------------------------------------------------------------------------------
   const regresar = () => navigation.goBack();
 
+  //---------------------------------------------------------------------------------------------------------------
+// Renderizado del formulario de registro y edición
+//---------------------------------------------------------------------------------------------------------------
+  
   return (
     <ScrollView style={styles.container}>
       {/* Header */}

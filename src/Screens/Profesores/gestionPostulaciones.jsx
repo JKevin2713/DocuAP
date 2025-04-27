@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from "react";
 import { 
   View, 
@@ -12,6 +13,9 @@ import { styles } from "../../Style/Profesores/gestionPostulaciones";
 import axios from "axios";
 import URL from "../../Services/url";
 
+//---------------------------------------------------------------------------------------------------------------
+// Función para formatear la fecha
+//---------------------------------------------------------------------------------------------------------------
 const formatDate = (timestamp) => {
   try {
     if (!timestamp) return "";
@@ -26,10 +30,16 @@ const formatDate = (timestamp) => {
   }
 };
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente GestionPostulaciones - Pantalla para gestionar postulaciones
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor gestionar las postulaciones de los estudiantes, filtrarlas y ver detalles específicos.
 const GestionPostulaciones = () => {
+  // Hooks para manejar la navegación y la ruta actual
   const navigation = useNavigation();
   const route = useRoute();
   const { userId, contactInfo } = route.params;
+  // estado para manejar las postulaciones y su filtrado
   const [postulaciones, setPostulaciones] = useState([]);
   const [filteredPostulaciones, setFilteredPostulaciones] = useState([]);
   
@@ -38,7 +48,13 @@ const GestionPostulaciones = () => {
     
   const [loading, setLoading] = useState(true);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar las postulaciones al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener las postulaciones relacionadas con el usuario
+  // y se almacenan en el estado correspondiente.
   useEffect(() => {
+    // Función para obtener las solicitudes relacionadas con asistencias
     const fetchSolicitudes = async () => {
       try {
         const apiUrl = `${URL}:3000`;
@@ -59,8 +75,12 @@ const GestionPostulaciones = () => {
     };
 
     fetchSolicitudes();
+    // espera al usuario para que se carguen las postulaciones antes de aplicar el filtro
   }, [userId]);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar el filtrado de postulaciones
+  //---------------------------------------------------------------------------------------------------------------
   const handleFilter = () => {
     let filtered = [...postulaciones];
 
@@ -84,12 +104,18 @@ const GestionPostulaciones = () => {
     setFilteredPostulaciones(filtered);
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para restablecer los filtros y la búsqueda
+  //---------------------------------------------------------------------------------------------------------------
   const resetFilter = () => {
     setSearchText("");
     setSelectedFilter("Todos");
     setFilteredPostulaciones(postulaciones);
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
   if (loading) {
     return (
       <View style={styles.container}>

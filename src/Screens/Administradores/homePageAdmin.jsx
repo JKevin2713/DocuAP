@@ -1,4 +1,4 @@
-
+// Importaciones necesarias
 import React from 'react';
 import {
   View,
@@ -9,6 +9,12 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../Style/Administradores/homePageAdmin';
+
+//---------------------------------------------------------------------------------------------------------------
+// Componente HomePageAdmin - Pantalla principal para administradores
+//---------------------------------------------------------------------------------------------------------------
+// Este componente muestra un menú con opciones para gestionar usuarios, monitorear actividades y validar ofertas publicadas.
+// Permite al administrador navegar a diferentes pantallas según la opción seleccionada.
 
 const HomePageAdmin = () => {
   const navigation = useNavigation();
@@ -25,6 +31,9 @@ const HomePageAdmin = () => {
     "Validación de ofertas publicadas": "ValidacionOfertas"
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+// Renderizado del menú de administradores
+//---------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container}>
       {/* Header institucional */}

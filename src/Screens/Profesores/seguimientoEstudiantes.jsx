@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -6,17 +7,32 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from 'axios';
 import URL from '../../Services/url';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente SeguimientoEstudiantes - Pantalla para seguimiento de estudiantes
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor ver y gestionar el seguimiento de los estudiantes asignados a él.
+// Incluye la posibilidad de editar y evaluar el desempeño de los estudiantes.
+
 const SeguimientoEstudiantes = () => {
+  // Hooks para manejar la navegación y la ruta actual
   const navigation = useNavigation();
   const route = useRoute();
   const { userId } = route.params;
   
+  // Definición de estados para manejar la información de los estudiantes y su seguimiento
   const [mergedData, setMergedData] = useState([]);
   const [selectedAsistencia, setSelectedAsistencia] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar la información de los estudiantes al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener la información de los estudiantes asignados al profesor
+  // y se almacenan en el estado correspondiente. Además, se obtiene la información adicional de cada estudiante.
+
   useEffect(() => {
     const apiUrl = `${URL}:3000`;
+    // Función para obtener la información de los estudiantes
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -60,8 +76,13 @@ const SeguimientoEstudiantes = () => {
     };
     
     fetchData();
+    // Espera al usuario para que se carguen los datos antes de aplicar el filtro
   }, [userId]);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
+  
   if (loading) {
     return (
       <View style={styles.container}>

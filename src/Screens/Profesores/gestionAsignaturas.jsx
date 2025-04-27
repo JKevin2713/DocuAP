@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from "react-native";
 import { styles } from "../../Style/Profesores/gestionAsignaturas";
@@ -5,6 +6,10 @@ import axios from "axios";
 import URL from "../../Services/url"; 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente HistorialCard - Tarjeta para mostrar el historial de asignaciones
+//---------------------------------------------------------------------------------------------------------------
+// Este componente recibe un objeto de historial y lo muestra en una tarjeta estilizada.
 const HistorialCard = ({ item }) => {
   const safeFormatDate = (timestamp) => {
     try {
@@ -20,9 +25,13 @@ const HistorialCard = ({ item }) => {
     }
   };
 
+  // Formatear las fechas de inicio y cierre
   const formattedFechaInicio = safeFormatDate(item.fechaInicio);
   const formattedFechaCierre = safeFormatDate(item.fechaFin);
 
+  // ----------------------------------------------------------------------------------------------------------------
+  // Renderizado de la tarjeta de historial
+  // ----------------------------------------------------------------------------------------------------------------
   return (
     <View style={styles.historialCard}>
       <Text style={styles.historialCardText}>Nombre: {item.tituloPrograma}</Text>
@@ -38,7 +47,14 @@ const HistorialCard = ({ item }) => {
   );
 };
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente GestionAsignaturas - Pantalla principal para la gestión de asignaturas
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor gestionar cursos, proyectos y su historial de asignaciones.
+// Incluye funcionalidades de búsqueda y filtrado para facilitar la navegación por los datos.
+
 const GestionAsignaturas = () => {
+  // Definición de estados para los datos y la búsqueda
   const [courses, setCourses] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [historial, setHistorial] = useState([]);
@@ -48,11 +64,20 @@ const GestionAsignaturas = () => {
   const [filteredProyectos, setFilteredProyectos] = useState([]);
   const [historialSearchText, setHistorialSearchText] = useState("");
   const [filteredHistorial, setFilteredHistorial] = useState([]);
+
+  // useNavigation permite navegar entre pantallas
+  // useRoute permite acceder a los parámetros de la ruta actual
+  // En este caso, se obtiene el ID de usuario y la información de contacto del profesor
   const route = useRoute();
   const { userId, contactInfo } = route.params;
   const navigation = useNavigation();
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar los cursos y proyectos al iniciar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se ejecuta una vez al montar el componente y cada vez que cambia el userId
   useEffect(() => {
+    // Función para obtener los cursos y proyectos del profesor
     const fetchCourses = async () => {
       try {
         const apiUrl = `${URL}:3000`;
@@ -68,9 +93,16 @@ const GestionAsignaturas = () => {
       }
     };
     fetchCourses();
+    // espere el usuario
   }, [userId]);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar el historial de asignaciones al iniciar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se ejecuta una vez al montar el componente y cada vez que cambia el userId
+
   useEffect(() => {
+    // Función para obtener el historial de asignaciones del profesor
     const fetchHistorial = async () => {
       try {
         const apiUrl = `${URL}:3000`;
@@ -86,8 +118,13 @@ const GestionAsignaturas = () => {
       }
     };
     fetchHistorial();
+    // espere el usuario
   }, [userId]);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Funciones para manejar la búsqueda y filtrado de cursos y proyectos
+  //---------------------------------------------------------------------------------------------------------------
+  // Filtra por nombre de curso o proyecto
   const handleCarouselSearch = () => {
     const filteredC = courses.filter((item) =>
       item.nombre.toLowerCase().includes(carouselSearchText.toLowerCase())
@@ -95,15 +132,18 @@ const GestionAsignaturas = () => {
     setFilteredCourses(filteredC);
   };
 
+  // Resetear el filtro del carrusel
   const resetCarousel = () => {
     setCarouselSearchText("");
     setFilteredCourses(courses);
   };
 
+  // Funcion para manejar el regreso a la pantalla anterior
   const handleRegresar = () => {
     navigation.goBack();
   };
 
+  // filtra por año 
   const filterHistorialByYear = () => {
     const filtered = historial.filter(
       (item) => item.fechaInicio === historialSearchText
@@ -111,6 +151,7 @@ const GestionAsignaturas = () => {
     setFilteredHistorial(filtered);
   };
 
+  // filtra por estado
   const filterHistorialByState = () => {
     const filtered = historial.filter(
       (item) => item.estado.toLowerCase() === historialSearchText.toLowerCase()
@@ -118,11 +159,15 @@ const GestionAsignaturas = () => {
     setFilteredHistorial(filtered);
   };
 
+  // Resetear el filtro del historial
   const resetHistorial = () => {
     setHistorialSearchText("");
     setFilteredHistorial(historial);
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente principal
+  //---------------------------------------------------------------------------------------------------------------
   if (loading) {
     return (
       <View style={styles.container}>

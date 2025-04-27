@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useEffect, useState } from "react";
 import { 
   View, 
@@ -14,6 +15,9 @@ import axios from "axios";
 import URL from "../../Services/url";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
+// ----------------------------------------------------------------------------------------------------------------
+// Función para formatear la fecha en el formato deseado
+// ----------------------------------------------------------------------------------------------------------------
 const formatDate = (timestamp) => {
   if (!timestamp) return "";
   if (typeof timestamp === "object" && timestamp.seconds) {
@@ -23,7 +27,13 @@ const formatDate = (timestamp) => {
   return timestamp;
 };
 
+// ----------------------------------------------------------------------------------------------------------------
+// Componente principal - Edición de Ofertas
+// ----------------------------------------------------------------------------------------------------------------
+
 const EdicionOfertas = () => {
+  // Estados para manejar la información de las ofertas y el formulario
+
   const [ofertas, setOfertas] = useState([]);
   const [selectedOfertaId, setSelectedOfertaId] = useState("");
   const [currentOferta, setCurrentOferta] = useState(null);
@@ -34,11 +44,17 @@ const EdicionOfertas = () => {
   const [totalHoras, setTotalHoras] = useState('');
   const [requisitosAdicionales, setRequisitosAdicionales] = useState('');
 
+  // Obtener la navegación y la ruta
+  // para acceder a los parámetros pasados desde la pantalla anterior
+  // y la navegación entre pantallas
   const navigation = useNavigation();
   const route = useRoute();
   const { userId, contactInfo } = route.params;
 
 
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para validar los campos del formulario antes de enviar
+  // -----------------------------------------------------------------------------------------------------------------
   const validarCampos = () => {
     const {
       tituloPrograma,
@@ -54,6 +70,9 @@ const EdicionOfertas = () => {
       fechaCierre,
     } = currentOferta;
   
+    // Validar que todos los campos obligatorios estén completos
+    // y que los valores sean válidos
+
     if (!tituloPrograma || !beneficio || !descripcion || !objetivos || !tipo || !horario || !semestre) {
       Alert.alert("Error", "Por favor complete todos los campos obligatorios.");
       return false;
@@ -107,7 +126,12 @@ const EdicionOfertas = () => {
   };
 
   
+  // -----------------------------------------------------------------------------------------------------------------
+  // Efecto para cargar las ofertas al iniciar el componente
+  // -----------------------------------------------------------------------------------------------------------------
+  // Se utiliza useEffect para realizar la llamada a la API y obtener las ofertas
   useEffect(() => {
+    // Función asíncrona para obtener las ofertas
     const fetchOfertas = async () => {
       try {
         const apiUrl = `${URL}:3000`;
@@ -135,12 +159,20 @@ const EdicionOfertas = () => {
       }
     };
     fetchOfertas();
+    // espera el userId para cargar las ofertas
   }, [userId]);
 
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para manejar el cambio en el Picker de ofertas
+  // -----------------------------------------------------------------------------------------------------------------
   const handlePickerChange = (id) => {
     const oferta = ofertas.find((o) => o.asistenciaId.toString() === id.toString());
     setCurrentOferta(oferta);
   };
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para manejar el evento de "Ver Más" en la tarjeta de oferta
+  // -----------------------------------------------------------------------------------------------------------------
 
  const handleVerMas = (oferta) => {
     const formattedOferta = {
@@ -157,6 +189,10 @@ const EdicionOfertas = () => {
     setModalOferta(formattedOferta);
     setModalVisible(true);
   };
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para manejar la eliminación de una oferta
+  // -----------------------------------------------------------------------------------------------------------------
 
   const handleDelete = async () => {
     try {
@@ -179,6 +215,10 @@ const EdicionOfertas = () => {
 
   };
   
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para manejar el cierre de una oferta
+  // -----------------------------------------------------------------------------------------------------------------
+
   const handleClose = async () => {
     try {
       const ofertaId = currentOferta.asistenciaId;
@@ -201,14 +241,19 @@ const EdicionOfertas = () => {
     }
   };
 
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para manejar la actualización de una oferta
+  // -----------------------------------------------------------------------------------------------------------------
   const handleGuardarCambios = async () => {
     if (!validarCampos()) return;
 
+    // Formatear las fechas al formato esperado por la base de datos
     const formatDateToDB = (dateString) => {
       const [year, month, day] = dateString.split('-');
       return `${day}/${month}/${year}`;
     };
 
+    // Crear el objeto con los datos actualizados
     const body = {
       tituloPrograma: currentOferta.tituloPrograma,
       beneficio: currentOferta.beneficio,
@@ -245,10 +290,17 @@ const EdicionOfertas = () => {
     }
   };
   
+  // -----------------------------------------------------------------------------------------------------------------
+  // Función para manejar el regreso a la pantalla anterior
+  // -----------------------------------------------------------------------------------------------------------------
+
   const handleRegresar = () => {
     navigation.goBack();
   };
 
+  // -----------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  // -----------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container}>
       {/* Carrusel de Ofertas */}

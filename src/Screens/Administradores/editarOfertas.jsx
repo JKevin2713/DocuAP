@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState } from 'react';
 import {
   View,
@@ -15,6 +16,12 @@ import URL from '../../Services/url'; // Asegúrate de que la URL es correcta
 import axios from 'axios'; // Asegúrate de que axios está instalado y correctamente importado
 import DateTimePicker from '@react-native-community/datetimepicker'; // Importamos DateTimePicker
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente EditarOferta - Pantalla para editar una oferta
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador editar los detalles de una oferta específica, como nombre, tipo, fechas,
+// estado y horas por semana. Utiliza un picker para seleccionar el campo a editar y un TextInput para ingresar el nuevo valor.
+
 const EditarOferta = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -28,11 +35,17 @@ const EditarOferta = () => {
     horasSemana = '',
   } = route.params || {};
 
+  // Definición de estados para manejar la información de la oferta
   const [campoSeleccionado, setCampoSeleccionado] = useState('');
   const [nuevoValor, setNuevoValor] = useState('');
   const [mostrarPicker, setMostrarPicker] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para guardar los cambios realizados en la oferta
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos editados al servidor para actualizar la oferta.
+  
   const guardarCambios = async () => {
     if (!campoSeleccionado || !nuevoValor) {
       alert('Por favor seleccione un campo y escriba un nuevo valor.');
@@ -63,6 +76,11 @@ const EditarOferta = () => {
     navigation.goBack();
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para obtener el placeholder del campo seleccionado
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función devuelve un placeholder adecuado según el campo que se esté editando.
+  // Esto ayuda a guiar al usuario sobre qué tipo de información se espera en el campo de entrada.
   const obtenerPlaceholder = () => {
     switch (campoSeleccionado) {
       case 'nombre': return 'Nuevo nombre';
@@ -75,9 +93,17 @@ const EditarOferta = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para abrir el calendario
+  //---------------------------------------------------------------------------------------------------------------
   const abrirCalendario = () => {
     setMostrarPicker(true);
   };
+
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar el cambio de fecha en el DateTimePicker
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de actualizar el estado con la fecha seleccionada y formatearla adecuadamente.
 
   const onChangeFecha = (event, selectedDate) => {
     setMostrarPicker(Platform.OS === 'ios'); // iOS mantiene el picker visible
@@ -87,6 +113,11 @@ const EditarOferta = () => {
       setNuevoValor(fechaFormateada);
     }
   };
+
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del formulario de edición de oferta
+  //---------------------------------------------------------------------------------------------------------------
+  
 
   return (
     <ScrollView style={styles.container}>

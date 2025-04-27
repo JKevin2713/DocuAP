@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -15,6 +16,11 @@ import axios from 'axios';
 import URL from '../../Services/url';
 import { useRoute } from '@react-navigation/native';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente ValidacionOfertas - Pantalla para validar ofertas
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador validar ofertas, aprobando o eliminando las mismas según su estado.
+// Se utiliza un FlatList para mostrar la información de manera eficiente y un TextInput para realizar búsquedas.
 const ValidacionOfertas = () => {
   const navigation = useNavigation();
   const [busqueda, setBusqueda] = useState('');
@@ -26,6 +32,12 @@ const ValidacionOfertas = () => {
     handlerDatos();
   }, []);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para obtener la información de las ofertas
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función realiza una llamada a la API para obtener la información de las ofertas y manejar errores de red o del servidor.
+  // Se utiliza un useEffect para realizar la llamada a la API al montar el componente.
+  // Se actualiza el estado de ofertas y filtradas con los datos obtenidos.
   const handlerDatos = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -43,6 +55,12 @@ const ValidacionOfertas = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para aceptar una asistencia
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función realiza una llamada a la API para aceptar una asistencia y manejar errores de red o del servidor.
+  // Se utiliza un endpoint específico para esta acción.
+  // Se actualiza el estado de ofertas y filtradas con los datos obtenidos.
   const handleAceptarAsistencia = async (idAsistencia) => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -60,6 +78,11 @@ const ValidacionOfertas = () => {
       return null;
     }
   }
+
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para eliminar una asistencia
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función realiza una llamada a la API para eliminar una asistencia y manejar errores de red o del servidor.
 
   const handleEliminarAsistencia = async (idAsistencia) => {
     try {
@@ -79,6 +102,12 @@ const ValidacionOfertas = () => {
     }
   }
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para realizar la búsqueda de ofertas
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función filtra la lista de ofertas según el texto ingresado en el TextInput.
+  // Se utiliza el método filter para buscar coincidencias en los campos de nombre, tipo y estado.
+  // Se actualiza el estado de filtradas con los resultados de la búsqueda.
   const realizarBusqueda = () => {
     const texto = busqueda.toLowerCase();
     const resultado = ofertas.filter(oferta =>
@@ -89,6 +118,10 @@ const ValidacionOfertas = () => {
     setFiltradas(resultado);
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado de cada elemento de la lista
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de renderizar cada elemento de la lista de ofertas.
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardRow}>
@@ -182,6 +215,10 @@ const ValidacionOfertas = () => {
     </View>
   );
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
+  
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}

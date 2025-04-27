@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -5,11 +6,18 @@ import { styles } from '../../Style/Profesores/creacionOfertas';
 import axios from 'axios';
 import URL from '../../Services/url';
 
+// ---------------------------------------------------------------------------------------------------------------
+// Componente principal - Pantalla de Creación de Ofertas
+// ---------------------------------------------------------------------------------------------------------------
+// Este componente permite a los profesores crear nuevas ofertas de programas, ingresando información relevante
 const CreacionOfertas = () => {
+  // Se obtienen las funciones de navegación y la ruta actual
+  // Se utiliza useNavigation para navegar entre pantallas y useRoute para obtener parámetros de la ruta actual
   const navigation = useNavigation();
   const route = useRoute();
   const { userId, contactInfo } = route.params;
 
+  // Se definen los estados para almacenar la información del formulario
   const [nombrePrograma, setNombrePrograma] = useState('');
   const [objetivos, setObjetivos] = useState('');
   const [tipo, setTipo] = useState('');
@@ -27,6 +35,10 @@ const CreacionOfertas = () => {
   const [totalHoras, setTotalHoras] = useState('');
   const [requisitosAdicionales, setRequisitosAdicionales] = useState('');
 
+  // ----------------------------------------------------------------------------------------------------------------
+  // Función para manejar la creación de la oferta
+  // ----------------------------------------------------------------------------------------------------------------
+  // Esta función valida los campos del formulario y envía la información a la API para crear una nueva oferta
   const handleCrearOferta = async () => {
     if (
       !nombrePrograma.trim() ||
@@ -46,23 +58,24 @@ const CreacionOfertas = () => {
       return;
     }
 
+    // Validación de campos numéricos
     const horasSemanalNum = parseInt(horasSemanal, 10);
     if (isNaN(horasSemanalNum) || horasSemanalNum <= 0) {
       Alert.alert('Error', 'Las horas por semana deben ser un número positivo.');
       return;
     }
-
+    // Validación de vacantes
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(fechaInicio) || !dateRegex.test(fechaCierre)) {
       Alert.alert('Error', 'Las fechas deben estar en el formato AAAA-MM-DD.');
       return;
     }
-
+    // Validación de fechas
     if (new Date(fechaInicio) > new Date(fechaCierre)) {
       Alert.alert('Error', 'La fecha de inicio no puede ser posterior a la fecha de cierre.');
       return;
     }
-
+    // construcción del objeto de datos a enviar
     const body = {
       nombrePrograma,
       objetivos,
@@ -83,6 +96,7 @@ const CreacionOfertas = () => {
       estado: 'Abierto',
   };
 
+  // Envío de la solicitud a la API
     try {
       const apiUrl = `${URL}:3000`;
       const response = await axios.post(
@@ -101,8 +115,15 @@ const CreacionOfertas = () => {
     }
   };
 
+  // ----------------------------------------------------------------------------------------------------------------
+  // Función para manejar el regreso a la pantalla anterior
+  // ----------------------------------------------------------------------------------------------------------------
+  // Esta función utiliza la navegación para regresar a la pantalla anterior
   const handleRegresar = () => navigation.goBack();
 
+  // ----------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  // ----------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Crear Nueva Oferta</Text>

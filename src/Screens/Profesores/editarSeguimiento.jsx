@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { styles } from '../../Style/Profesores/editarSeguimiento'; 
@@ -5,7 +6,13 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import URL from '../../Services/url';
 
+// ---------------------------------------------------------------------------------------------------------------
+// Componente EditarSeguimiento - Pantalla para editar el seguimiento de un estudiante
+// ---------------------------------------------------------------------------------------------------------------
+// Este componente permite al usuario editar los datos de seguimiento de un estudiante específico.
 const EditarSeguimiento = () => {
+
+  // Definición de estados para los campos del formulario
   const [tutoriasCumplidas, setTutoriasCumplidas] = useState('');
   const [asistenciasCumplidas, setAsistenciasCumplidas] = useState('');
   const [cumplimientoTareas, setCumplimientoTareas] = useState('');
@@ -13,10 +20,18 @@ const EditarSeguimiento = () => {
   const [asistenciasPorCumplir, setAsistenciasPorCumplir] = useState('');
   const [tareasPorCumplir, setTareasPorCumplir] = useState('');
 
+  // Hooks para navegación y ruta
+  // useNavigation permite navegar entre pantallas
+  // useRoute permite acceder a los parámetros de la ruta actual
+  // En este caso, se obtiene el ID de asistencia para editar el registro correspondiente
   const navigation = useNavigation();
   const route = useRoute();
   const { asistenciaId } = route.params;
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar la edición del registro de seguimiento
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos editados al servidor para actualizar el registro en la base de datos
   const handleEditarRegistro = async () => {
     try {
       const data = {
@@ -46,11 +61,17 @@ const EditarSeguimiento = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar el regreso a la pantalla anterior
+  //---------------------------------------------------------------------------------------------------------------
   const handleRegresar = () => {
     console.log("Regresar");
     navigation.goBack();
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text style={styles.header}>Editar Seguimiento</Text>

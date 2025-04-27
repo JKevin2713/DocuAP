@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -16,14 +17,23 @@ import axios from 'axios';
 import URL from '../../Services/url';
 
 
-
+//---------------------------------------------------------------------------------------------------------------
+// Componente GestionUsuariosRoles - Pantalla para gestionar usuarios y roles 
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador gestionar los usuarios y sus roles, así como realizar búsquedas y eliminar usuarios.
 const GestionUsuariosRoles = () => {
+  // Definición de estados y hooks
   const navigation = useNavigation();
   const [busqueda, setBusqueda] = useState('');
   const [usuarios, setUsuarios] = useState([]);
   const [filtrados, setFiltrados] = useState([]);
   const route = useRoute();
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar la información de los usuarios al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener la información de los usuarios y se almacenan en el estado correspondiente.
+  
   useEffect(() => {
     const fetchData = async () => {
       const datos = await handleInformacionUsuarios();
@@ -35,6 +45,11 @@ const GestionUsuariosRoles = () => {
     fetchData();
   }, []);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para obtener la información de los usuarios
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función realiza una llamada a la API para obtener la información de los usuarios y manejar errores de red o del servidor.
+  
   const handleInformacionUsuarios = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -47,6 +62,11 @@ const GestionUsuariosRoles = () => {
       return null;
     }
   };
+
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para eliminar un usuario
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función realiza una llamada a la API para eliminar un usuario específico y manejar errores de red o del servidor.
 
   const handleEliminarUsuarios = async (idUsuario) => {
     try {
@@ -71,6 +91,10 @@ const GestionUsuariosRoles = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para realizar la búsqueda de usuarios
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función filtra la lista de usuarios según el texto ingresado en el campo de búsqueda.
   const realizarBusqueda = () => {
     const texto = busqueda.toLowerCase();
     const resultado = usuarios.filter(usuario =>
@@ -80,6 +104,10 @@ const GestionUsuariosRoles = () => {
     setFiltrados(resultado);
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado de cada elemento de la lista de usuarios
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función define cómo se verá cada tarjeta de usuario en la lista, incluyendo los detalles y botones de acción.
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       {/* Nombre */}
@@ -164,6 +192,9 @@ const GestionUsuariosRoles = () => {
     </View>
   );
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente principal
+  //---------------------------------------------------------------------------------------------------------------
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}

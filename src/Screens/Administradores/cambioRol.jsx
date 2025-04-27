@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -12,13 +13,22 @@ import { styles } from '../../Style/Administradores/cambioRolStyle';
 import axios from 'axios';
 import URL from '../../Services/url';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente CambioRol - Pantalla para cambiar el rol de un usuario
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador cambiar el rol de un usuario específico.
 const CambioRol = () => {
+  // Hooks para manejar la navegación y la ruta actual
   const navigation = useNavigation();
   const route = useRoute();
   const { nombre = 'Nombre del usuario', rol = '' , id } = route.params || {};
 
+  // Definición de estados para manejar la información del rol
   const [rolSeleccionado, setRolSeleccionado] = useState(rol);
 
+  //---------------------------------------------------------------------------------------------------------------
+// useEffect para cargar la información del rol al montar el componente
+//---------------------------------------------------------------------------------------------------------------
   const handleActualizarRol = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -39,6 +49,9 @@ const CambioRol = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+// Renderizado del formulario de cambio de rol
+//---------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView style={styles.container}>
       {/* Header */}

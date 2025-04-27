@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import { 
   View, 
@@ -12,21 +13,33 @@ import axios from 'axios';
 import URL from '../../Services/url';
 import { styles } from '../../Style/Profesores/evaluacionRetroalimentacion';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente EvaluacionRetroalimentacion - Pantalla para evaluar y retroalimentar a los estudiantes
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor evaluar y retroalimentar a los estudiantes en función de sus asistencias y desempeños.
 const EvaluacionRetroalimentacion = ({ route }) => {
+
+  
   const { userId } = route.params;
   const apiUrl = `${URL}:3000`;
 
+  // Estados para manejar los registros de asistencias y desempeños
   const [asignadas, setAsignadas] = useState([]);
   const [cerradas, setCerradas] = useState([]);
   const [allRecords, setAllRecords] = useState([]);
-
   const [selectedKey, setSelectedKey] = useState('');
   const [customKey, setCustomKey] = useState('');
   const [registro, setRegistro] = useState(null);
   const [newComentario, setNewComentario] = useState('');
   const [newDesempeno, setNewDesempeno] = useState('');
 
+
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar los datos de asistencias y desempeños al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una petición a la API para obtener la información del usuario y se formatean los datos
   useEffect(() => {
+    // Función para obtener datos de la API
     const fetchData = async () => {
       try {
         const resp = await axios.get(
@@ -82,8 +95,13 @@ const EvaluacionRetroalimentacion = ({ route }) => {
       }
     };
     fetchData();
+    // espera el userId para cargar los datos
   }, [userId]);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para filtrar los registros según el título seleccionado
+  //---------------------------------------------------------------------------------------------------------------
+  // Se filtran los registros de acuerdo al título seleccionado en el Picker
   useEffect(() => {
     let key = selectedKey;
     if (key === "custom" && customKey.trim()) key = customKey.trim().toLowerCase();
@@ -102,6 +120,10 @@ const EvaluacionRetroalimentacion = ({ route }) => {
   console.log("Todos los títulos en allRecords:", allRecords.map(r => r.tituloPrograma));
   console.log("Títulos únicos para el Picker:", uniqueTitles);
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar el guardado de la retroalimentación y desempeño
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos de retroalimentación y desempeño al servidor para guardarlos en la base de datos
   const handleGuardar = async () => {
     if (!registro) {
       return Alert.alert("Error", "Seleccione un registro antes de guardar");
@@ -146,6 +168,10 @@ const EvaluacionRetroalimentacion = ({ route }) => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
+  
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.sectionTitle}>Historial de Evaluación</Text>

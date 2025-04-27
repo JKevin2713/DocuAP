@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import axios from 'axios';
@@ -5,12 +6,25 @@ import { styles } from '../../Style/Profesores/infoEstudiante';
 import URL from '../../Services/url';
 import { Timestamp } from 'firebase/firestore';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente InfoEstudiante - Pantalla para mostrar información de un estudiante
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor ver y gestionar la información de un estudiante específico.
+// Incluye la opción de aprobar, rechazar o solicitar una reunión con el estudiante.
+//---------------------------------------------------------------------------------------------------------------
 const InfoEstudiante = ({ route, navigation }) => {
   const { student } = route.params;
   const [carreraName, setCarreraName] = useState(student.carrera || "");
   console.log("studente: ",student)
 
+
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar la carrera del estudiante al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener el nombre de la carrera del estudiante
+
   useEffect(() => {
+    // Función para obtener la carrera del estudiante
     const fetchCarrera = async () => {
       try {
         const response = await axios.get(
@@ -28,6 +42,11 @@ const InfoEstudiante = ({ route, navigation }) => {
   }, [student.userId]);
 
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para asignar un estudiante y eliminar la solicitud
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos del estudiante al servidor para asignarlo y eliminar la solicitud
+  // de postulación. Se utiliza un endpoint específico para esta acción.
   const asignarEstudiante = async () => {
     try {
       const datosStudent = {
@@ -55,6 +74,13 @@ const InfoEstudiante = ({ route, navigation }) => {
     }
   };
 
+  //
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para rechazar la postulación de un estudiante
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar una solicitud al servidor para rechazar la postulación del estudiante.
+  // Se utiliza un endpoint específico para esta acción.
+
   const rechazarPostulacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -75,6 +101,11 @@ const InfoEstudiante = ({ route, navigation }) => {
   };
   
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para solicitar una reunión con el estudiante
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar una solicitud al servidor para solicitar una reunión con el estudiante.
+  // Se utiliza un endpoint específico para esta acción.
   const solicitarReunion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -94,6 +125,10 @@ const InfoEstudiante = ({ route, navigation }) => {
   };
   
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente InfoEstudiante
+  //---------------------------------------------------------------------------------------------------------------
+  
   return (
     <ScrollView style={styles.container}>
       {/* Datos del estudiante */}

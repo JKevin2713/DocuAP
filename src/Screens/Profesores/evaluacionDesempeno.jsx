@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -6,13 +7,23 @@ import axios from 'axios';
 import { styles } from '../../Style/Profesores/evaluacionDesempeno';
 import URL from '../../Services/url';
 
+//---------------------------------------------------------------------------------------------------------------
+// Componente EvaluacionDesempeno - Pantalla para evaluar el desempeño de un estudiante
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al profesor evaluar el desempeño de un estudiante en una asistencia específica.
 const EvaluacionDesempeno = () => {
+
+  // Definición de estados para los campos del formulario
   const route = useRoute();
   const navigation = useNavigation();
   const { asistenciaId, student } = route.params;
   const [desempenoGeneral, setDesempenoGeneral] = useState("Bueno");
   const [retroalimentacion, setRetroalimentacion] = useState("");
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar la evaluación del desempeño
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de enviar los datos de evaluación al servidor para guardarlos en la base de datos
   const handleGuardar = async () => {
     try {
       if (!desempenoGeneral || !retroalimentacion) {
@@ -37,10 +48,16 @@ const EvaluacionDesempeno = () => {
     }
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para manejar el regreso a la pantalla anterior
+  //---------------------------------------------------------------------------------------------------------------
   const handleRegresar = () => {
     navigation.goBack();
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del formulario de evaluación
+  //---------------------------------------------------------------------------------------------------------------
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* El título muestra el nombre del estudiante */}

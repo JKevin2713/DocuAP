@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -15,7 +16,12 @@ import axios from 'axios';
 
 
 
-
+//---------------------------------------------------------------------------------------------------------------
+// Componente MonitoreoActividades - Pantalla para monitorear actividades
+//---------------------------------------------------------------------------------------------------------------
+// Este componente permite al administrador monitorear las actividades realizadas por los usuarios, filtrando por asistencia, responsable y estado.
+// Se utiliza un FlatList para mostrar la información de manera eficiente y un TextInput para realizar búsquedas.
+//---------------------------------------------------------------------------------------------------------------
 const MonitoreoActividades = () => {
   const navigation = useNavigation();
   const [busqueda, setBusqueda] = useState('');
@@ -23,6 +29,11 @@ const MonitoreoActividades = () => {
   const route = useRoute();
 
 
+  //---------------------------------------------------------------------------------------------------------------
+  // useEffect para cargar la información de las asistencias al montar el componente
+  //---------------------------------------------------------------------------------------------------------------
+  // Se realiza una llamada a la API para obtener la información de las asistencias y se almacenan en el estado correspondiente.
+  // Se utiliza un useEffect para realizar la llamada a la API al montar el componente.
   useEffect(() => {
     const obtenerAsistencias= async () => {
       try {
@@ -37,6 +48,12 @@ const MonitoreoActividades = () => {
   }, []);
     
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Función para realizar la búsqueda de actividades
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función filtra la lista de actividades según el texto ingresado en el TextInput.
+  // Se utiliza el método filter para buscar coincidencias en los campos de asistencia, responsable y estado.
+  // Se actualiza el estado de filtradas con los resultados de la búsqueda.
   const realizarBusqueda = () => {
     const texto = busqueda.toLowerCase();
     const resultado = seguimientoData.filter(item =>
@@ -47,6 +64,10 @@ const MonitoreoActividades = () => {
     setFiltradas(resultado);
   };
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado de cada elemento de la lista
+  //---------------------------------------------------------------------------------------------------------------
+  // Esta función se encarga de renderizar cada elemento de la lista de actividades.
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardRow}>
@@ -77,6 +98,9 @@ const MonitoreoActividades = () => {
     </View>
   );
 
+  //---------------------------------------------------------------------------------------------------------------
+  // Renderizado del componente
+  //---------------------------------------------------------------------------------------------------------------
   return (
     <SafeAreaView style={styles.container}>
       {/* Header con logo y perfil */}
