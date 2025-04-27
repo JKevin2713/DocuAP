@@ -82,7 +82,9 @@ const SeguimientoEstudiantes = () => {
   //---------------------------------------------------------------------------------------------------------------
   // Renderizado del componente
   //---------------------------------------------------------------------------------------------------------------
-  
+  // Se muestra un indicador de carga mientras se obtienen los datos.
+  // Una vez que los datos están disponibles, se renderiza la lista de estudiantes y sus detalles.
+  // También se incluyen botones para editar y evaluar el desempeño de los estudiantes.
   if (loading) {
     return (
       <View style={styles.container}>
