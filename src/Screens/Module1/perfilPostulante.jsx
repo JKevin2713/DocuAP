@@ -1,43 +1,47 @@
-import React, { useEffect } from 'react';
+// -------------------------------------------------------------------------------------------------------------
+// Descripción general:
+// Pantalla de perfil individual de un estudiante postulante.
+// - Muestra datos personales
+// - Muestra historial de asistencias o tutorías relacionadas
+// -------------------------------------------------------------------------------------------------------------
+
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { Button, Card, Avatar } from 'react-native-paper';
-import { styles } from '../../Style/Module1/perfilPostulante';
-import { useRoute } from '@react-navigation/native';
-import URL from '../../Services/url';
-import axios from 'axios';
-import { useState } from 'react';
+import { styles } from '../../Style/Module1/perfilPostulante'; // Estilos personalizados
+import { useRoute } from '@react-navigation/native';           // Hook para obtener parámetros
+import URL from '../../Services/url';                          // URL base de la API
+import axios from 'axios';                                      // Cliente HTTP
 
-
-
-// 🔹 Historial de ofertas
-const historialOfertas = [
-  {
-    titulo: "Tuto mate",
-    fecha: "Apr 15, 2025",
-    horas: "40 horas/semana"
-  }
-];
-
+// -------------------------------------------------------------------------------------------------------------
+// Componente principal - PerfilEstudiante
+// -------------------------------------------------------------------------------------------------------------
 export default function PerfilEstudiante() {
-  const [datosEstudiante, setDatosEstudiante] = useState({});
-  const [historialOfertas, setHistorialOfertas] = useState([]); // si en algún momento también lo traés
+  
+  // Estados principales
+  const [datosEstudiante, setDatosEstudiante] = useState({});      // Datos básicos del estudiante
+  const [historialOfertas, setHistorialOfertas] = useState([]);     // Historial de ofertas/asistencias
   const route = useRoute();
-  const { userId } = route.params;
+  const { userId } = route.params;                                 // Obtener el userId pasado por navegación
 
+  // -----------------------------------------------------------------------------------------------------------
+  // useEffect para cargar los datos al montar el componente
+  // -----------------------------------------------------------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       const data = await handleInformacion();
-      console.log('Datos del estudiante:', data); // Debug
+      console.log('Datos del estudiante:', data); // Depuración
       if (data && data.estudiante) {
-        setDatosEstudiante(data.estudiante);
-        setHistorialOfertas(data.historialAsistencia); // Si también traes el historial de ofertas
+        setDatosEstudiante(data.estudiante);     // Actualizar datos básicos
+        setHistorialOfertas(data.historialAsistencia || []); // Actualizar historial
       }
     };
-  
     fetchData();
   }, []);
-  
 
+  // -----------------------------------------------------------------------------------------------------------
+  // Función que consulta la API para obtener los datos del perfil de estudiante
+  // -----------------------------------------------------------------------------------------------------------
   const handleInformacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -45,9 +49,8 @@ export default function PerfilEstudiante() {
         params: { userId }
       });
 
-      const data = response.data;
       if (response.status === 200) {
-        return data;
+        return response.data;
       } else {
         console.error('Error al obtener los datos:', response.statusText);
         return [];
@@ -58,39 +61,35 @@ export default function PerfilEstudiante() {
     }
   };
 
+  // -----------------------------------------------------------------------------------------------------------
+  // Renderizado principal
+  // -----------------------------------------------------------------------------------------------------------
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      
+      {/* Título principal */}
       <Text style={styles.titulo}>Perfil del estudiante</Text>
-  
+
       <View style={styles.contenido}>
-        {/* Información del estudiante */}
+        
+        {/* Card de información básica */}
         <View style={styles.card}>
           <Avatar.Icon size={100} icon="account" style={styles.avatar} />
           <Text style={styles.seccionTitulo}>Mis Datos</Text>
-          <Text style={styles.dato}>
-            <Text style={styles.etiqueta}>Correo: </Text>
-            {datosEstudiante.correo}
-          </Text>
-          <Text style={styles.dato}>
-            <Text style={styles.etiqueta}>Nombre: </Text>
-            {datosEstudiante.nombre}
-          </Text>
-          <Text style={styles.dato}>
-            <Text style={styles.etiqueta}>Carrera: </Text>
-            {datosEstudiante.carrera}
-          </Text>
-          <Text style={styles.dato}>
-            <Text style={styles.etiqueta}>Ponderado: </Text>
-            {datosEstudiante.ponderado}
-          </Text>
-          <Text style={styles.dato}>
-            <Text style={styles.etiqueta}>Cursos aprobados: </Text>
-            {datosEstudiante.cursosAprobados}
-          </Text>
+
+          {/* Campos del estudiante */}
+          <Text style={styles.dato}><Text style={styles.etiqueta}>Correo: </Text>{datosEstudiante.correo}</Text>
+          <Text style={styles.dato}><Text style={styles.etiqueta}>Nombre: </Text>{datosEstudiante.nombre}</Text>
+          <Text style={styles.dato}><Text style={styles.etiqueta}>Carrera: </Text>{datosEstudiante.carrera}</Text>
+          <Text style={styles.dato}><Text style={styles.etiqueta}>Ponderado: </Text>{datosEstudiante.ponderado}</Text>
+          <Text style={styles.dato}><Text style={styles.etiqueta}>Cursos aprobados: </Text>{datosEstudiante.cursosAprobados}</Text>
         </View>
-  
+
+        {/* Card de historial de ofertas */}
         <View style={styles.card}>
           <Text style={styles.seccionTitulo}>Historial de ofertas</Text>
+
+          {/* Listado de historial */}
           {historialOfertas.length > 0 ? (
             historialOfertas.map((oferta, index) => (
               <Card key={index} style={styles.oferta}>
@@ -103,7 +102,9 @@ export default function PerfilEstudiante() {
                   subtitle={oferta.fecha}
                 />
                 <Card.Content>
-                  <Text style={[styles.chip, { flexWrap: 'wrap' }]}>{oferta.horas} horas</Text>
+                  <Text style={[styles.chip, { flexWrap: 'wrap' }]}>
+                    {oferta.horas} horas
+                  </Text>
                 </Card.Content>
               </Card>
             ))
@@ -111,6 +112,7 @@ export default function PerfilEstudiante() {
             <Text style={styles.dato}>No hay ofertas registradas.</Text>
           )}
         </View>
+
       </View>
     </ScrollView>
   );

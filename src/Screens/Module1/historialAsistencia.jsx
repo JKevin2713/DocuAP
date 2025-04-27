@@ -1,51 +1,56 @@
-import React, { use, useState } from 'react';
+//---------------------------------------------------------------------------------------------------------------
+// Descripción general:
+// Este componente de React Native muestra el historial de asistencias de un departamento o escuela.
+// Permite aplicar filtros de búsqueda, semestre y estado mediante modales.
+// Se conecta al backend para traer la información de las asistencias.
+//---------------------------------------------------------------------------------------------------------------
+
+import React, { useState, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native'; // Hook para acceder a parámetros de ruta
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
-  Modal,
-  Pressable,
+  View, Text, TextInput, ScrollView, TouchableOpacity,
+  SafeAreaView, Modal, Pressable, FlatList
 } from 'react-native';
-import { useEffect } from 'react';
-import { styles } from '../../Style/Module1/historialAsistencia';
-import { useRoute } from '@react-navigation/native';
-import URL from '../../Services/url';
-import axios from 'axios';
+import { styles } from '../../Style/Module1/historialAsistencia'; // Estilos personalizados
+import URL from '../../Services/url'; // URL base de conexión al backend
+import axios from 'axios'; // Cliente HTTP
 
-
+//---------------------------------------------------------------------------------------------------------------
+// Componente principal - Historial de Asistencias
+//---------------------------------------------------------------------------------------------------------------
 export default function HistorialAsistenciaScreen() {
-  const [search, setSearch] = useState('');
-  const [selectedSemestre, setSelectedSemestre] = useState('');
-  const [selectedEstado, setSelectedEstado] = useState('');
-  const [showSemestreModal, setShowSemestreModal] = useState(false);
-  const [showEstadoModal, setShowEstadoModal] = useState(false);
-  const [allData, setAllData] = useState([]); // Estado para almacenar los datos obtenidos de la API
-  const route = useRoute();
-  const { userId } = route.params; // Obtener el userId de los parámetros de la ruta
+  // Estados para filtros y datos
+  const [search, setSearch] = useState(''); // Búsqueda por nombre de curso
+  const [selectedSemestre, setSelectedSemestre] = useState(''); // Filtro de semestre
+  const [selectedEstado, setSelectedEstado] = useState(''); // Filtro de estado
+  const [showSemestreModal, setShowSemestreModal] = useState(false); // Modal semestre
+  const [showEstadoModal, setShowEstadoModal] = useState(false); // Modal estado
+  const [allData, setAllData] = useState([]); // Datos obtenidos de la API
 
+  const route = useRoute();
+  const { userId } = route.params; // Obtener ID del usuario desde los parámetros de navegación
+
+  //-------------------------------------------------------------------------------------------------------------
+  // Hook para obtener la información al montar el componente
+  //-------------------------------------------------------------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       const data = await handleInformacion();
-      setAllData(data); // Actualizar el estado con los datos obtenidos
+      setAllData(data);
     };
     fetchData();
-  }, []); // Ejecutar la función al montar el componente
+  }, []);
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Función para obtener historial de asistencias desde el backend
+  //-------------------------------------------------------------------------------------------------------------
   const handleInformacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
-      const response = await axios.get(`${apiUrl}/escuelas/historialAsistencias`, {
-        params: { userId }
-      });
-
-      const data = response.data;
+      const response = await axios.get(`${apiUrl}/escuelas/historialAsistencias`, { params: { userId } });
 
       if (response.status === 200) {
-        return data.historialAsistencia || [];
+        return response.data.historialAsistencia || [];
       } else {
         console.error('Error al obtener los datos:', response.statusText);
         return [];
@@ -53,21 +58,27 @@ export default function HistorialAsistenciaScreen() {
     } catch (error) {
       console.error('Error al realizar la solicitud:', error);
       return [];
-    } 
-  }
-  
+    }
+  };
 
-
-  // 🔁 Obtener valores únicos de semestre y estado
+  //-------------------------------------------------------------------------------------------------------------
+  // Variables derivadas: valores únicos para filtros
+  //-------------------------------------------------------------------------------------------------------------
   const uniqueSemestres = [...new Set(allData.map(item => item.semestre))];
   const uniqueEstados = [...new Set(allData.map(item => item.estado))];
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Aplicar filtros de búsqueda, semestre y estado
+  //-------------------------------------------------------------------------------------------------------------
   const filteredData = allData.filter(item =>
     item.curso.toLowerCase().includes(search.toLowerCase()) &&
     (selectedSemestre ? item.semestre === selectedSemestre : true) &&
     (selectedEstado ? item.estado === selectedEstado : true)
   );
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado de cada item de asistencia
+  //-------------------------------------------------------------------------------------------------------------
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.cardDate}>{item.fecha}</Text>
@@ -94,10 +105,14 @@ export default function HistorialAsistenciaScreen() {
     </View>
   );
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado principal de pantalla
+  //-------------------------------------------------------------------------------------------------------------
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Historial de asistencia</Text>
 
+      {/* Buscador y botones de filtro */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.search}
@@ -113,7 +128,7 @@ export default function HistorialAsistenciaScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* SEMESTRE MODAL */}
+      {/* Modal para seleccionar semestre */}
       <Modal transparent visible={showSemestreModal} animationType="slide">
         <Pressable style={styles.modalBackground} onPress={() => setShowSemestreModal(false)}>
           <View style={styles.modalBox}>
@@ -136,7 +151,7 @@ export default function HistorialAsistenciaScreen() {
         </Pressable>
       </Modal>
 
-      {/* ESTADO MODAL */}
+      {/* Modal para seleccionar estado */}
       <Modal transparent visible={showEstadoModal} animationType="slide">
         <Pressable style={styles.modalBackground} onPress={() => setShowEstadoModal(false)}>
           <View style={styles.modalBox}>
@@ -159,6 +174,7 @@ export default function HistorialAsistenciaScreen() {
         </Pressable>
       </Modal>
 
+      {/* Lista de asistencias filtradas */}
       <FlatList
         data={filteredData}
         renderItem={renderItem}

@@ -1,3 +1,10 @@
+//---------------------------------------------------------------------------------------------------------------
+// Descripción general:
+// Este componente muestra todos los beneficios financieros asignados a estudiantes (pagos o exoneraciones).
+// Permite buscar por nombre, filtrar por estado (Activo, Inactivo, Todo) y navegar al perfil detallado del estudiante.
+// Se conecta al backend para obtener los datos de los beneficiarios.
+//---------------------------------------------------------------------------------------------------------------
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -6,108 +13,105 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { styles } from '../../Style/Module1/historialPagos'; // Estilos personalizados
+import URL from '../../Services/url'; // URL base del servidor
+import axios from 'axios'; // Cliente HTTP
 
-import { useNavigation } from '@react-navigation/native';
-import { styles } from '../../Style/Module1/historialPagos'; // Asegúrate de que la ruta sea correcta
-import { useRoute } from '@react-navigation/native';
-import URL from '../../Services/url'; // Asegúrate de que la ruta sea correcta
-import axios from 'axios';
+//---------------------------------------------------------------------------------------------------------------
+// Componente principal - BeneficiosScreen
+//---------------------------------------------------------------------------------------------------------------
+export default function BeneficiosScreen() {
+  // Estados principales
+  const [filtro, setFiltro] = useState('Todo'); // Filtro por estado
+  const [busqueda, setBusqueda] = useState(''); // Texto de búsqueda
+  const [datos, setDatos] = useState(); // Datos obtenidos del backend
+  const navigation = useNavigation(); // Hook para navegación
+  const route = useRoute(); // Hook para ruta
+  const { userId } = route.params; // Obtener userId de parámetros de navegación
 
-const beneficiosBD = [
-  {
-    id: '1',
-    estudiante: 'Tomás',
-    carrera: 'Computación',
-    oferta: 'Tuto mate',
-    tipo: 'Pago',
-    monto: 1200,
-    semestre: 'II Semestre',
-    estado: 'Aprobada',
-  },
-  {
-    id: '2',
-    estudiante: 'Santiago',
-    carrera: 'Computación',
-    oferta: 'Elementos',
-    tipo: 'Pago',
-    monto: 900,
-    semestre: 'I Semestre',
-    estado: 'Inactivo',
-  },
-];
+  //-------------------------------------------------------------------------------------------------------------
+  // Hook para cargar datos al montar el componente
+  //-------------------------------------------------------------------------------------------------------------
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await handleInformacion();
+      setDatos(data);
+    };
+    fetchData();
+  }, []);
 
-export default function BeneficiosScreen(){
-  const [filtro, setFiltro] = useState('Todo');
-  const [busqueda, setBusqueda] = useState('');
-  const navigation = useNavigation();
-    const [datos, setDatos] = useState();
-    const route = useRoute();
-    const { userId } = route.params; // Obtener el userId de los parámetros de la ruta
-  
-    useEffect(() => {
-      const fetchData = async () => {
-        const data = await handleInformacion();
-        setDatos(data);
-      };
-      fetchData();
-    }, []);
-  
-    const handleInformacion = async () => {
-      try {
-        const apiUrl = `${URL}:3000`;
-        const response = await axios.get(`${apiUrl}/escuelas/historialBeneficiarios`, {
-          params: { userId }
-        });
-        const data = response.data;
-        if (response.status === 200) {
-          console.log('Datos obtenidos:', data);
-          return data || [];
-        } else {
-          console.error('Error al obtener los datos:', response.statusText);
-          return [];
-        }
-      } catch (error) {
-        console.error('Error al realizar la solicitud:', error);
+  //-------------------------------------------------------------------------------------------------------------
+  // Función para obtener datos de los beneficiarios desde el backend
+  //-------------------------------------------------------------------------------------------------------------
+  const handleInformacion = async () => {
+    try {
+      const apiUrl = `${URL}:3000`;
+      const response = await axios.get(`${apiUrl}/escuelas/historialBeneficiarios`, {
+        params: { userId }
+      });
+
+      if (response.status === 200) {
+        console.log('Datos obtenidos:', response.data);
+        return response.data || [];
+      } else {
+        console.error('Error al obtener los datos:', response.statusText);
         return [];
       }
-    };
-  
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+      return [];
+    }
+  };
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Función para aplicar filtros de búsqueda y estado sobre los datos
+  //-------------------------------------------------------------------------------------------------------------
+  const filtrarBeneficios = () => {
+    let resultados = datos || [];
 
-    const filtrarBeneficios = () => {
-      let resultados = datos || [];
-    
-      if (filtro === 'Activo') {
-        resultados = resultados.filter((b) => b.estado === 'Aprobada');
-      } else if (filtro === 'Inactivo') {
-        resultados = resultados.filter((b) => b.estado === 'Inactivo');
-      }
-    
-      if (busqueda.trim() !== '') {
-        resultados = resultados.filter((b) =>
-          b.estudiante.toLowerCase().includes(busqueda.toLowerCase())
-        );
-      }
-    
-      return resultados;
-    };
+    // Filtrado por estado
+    if (filtro === 'Activo') {
+      resultados = resultados.filter(b => b.estado === 'Aprobada');
+    } else if (filtro === 'Inactivo') {
+      resultados = resultados.filter(b => b.estado === 'Inactivo');
+    }
+
+    // Búsqueda por nombre de estudiante
+    if (busqueda.trim() !== '') {
+      resultados = resultados.filter(b =>
+        b.estudiante.toLowerCase().includes(busqueda.toLowerCase())
+      );
+    }
+
+    return resultados;
+  };
 
   const beneficiosFiltrados = filtrarBeneficios();
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado de cada fila de beneficio
+  //-------------------------------------------------------------------------------------------------------------
   const renderBeneficio = ({ item }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.estudiante}</Text>
       <Text style={styles.cell}>{item.carrera}</Text>
       <Text style={styles.cell}>{item.oferta}</Text>
       <Text style={styles.cell}>{item.tipo}</Text>
-      <Text style={styles.cell}>{item.monto}</Text>
+      <Text style={styles.cell}>${item.monto}</Text>
       <Text style={styles.cell}>{item.semestre}</Text>
-      <TouchableOpacity style={styles.detallesBtn} onPress={() => navigation.navigate("perfilPostulante", { userId : item.idEstudiante })}>
+      <TouchableOpacity
+        style={styles.detallesBtn}
+        onPress={() => navigation.navigate("perfilPostulante", { userId: item.idEstudiante })}
+      >
         <Text style={styles.detallesText}>Detalles</Text>
       </TouchableOpacity>
     </View>
   );
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado principal de la pantalla
+  //-------------------------------------------------------------------------------------------------------------
   return (
     <View style={styles.container}>
       <Text style={styles.title}>TODOS LOS BENEFICIOS</Text>
@@ -115,7 +119,7 @@ export default function BeneficiosScreen(){
         Administre todos los beneficios financieros asignados
       </Text>
 
-      {/* Buscador */}
+      {/* Buscador de estudiantes */}
       <TextInput
         style={styles.input}
         placeholder="Buscar por nombre..."
@@ -123,7 +127,7 @@ export default function BeneficiosScreen(){
         onChangeText={setBusqueda}
       />
 
-      {/* Botones de filtro */}
+      {/* Botones de filtro por estado */}
       <View style={styles.filtros}>
         {['Todo', 'Activo', 'Inactivo'].map((tipo) => (
           <TouchableOpacity
@@ -146,7 +150,7 @@ export default function BeneficiosScreen(){
         ))}
       </View>
 
-      {/* Encabezado */}
+      {/* Encabezado de tabla */}
       <View style={styles.headerRow}>
         <Text style={styles.headerCell}>Estudiante</Text>
         <Text style={styles.headerCell}>Carrera</Text>
@@ -157,7 +161,7 @@ export default function BeneficiosScreen(){
         <Text style={styles.headerCell}>Acciones</Text>
       </View>
 
-      {/* Lista */}
+      {/* Lista de beneficios */}
       <FlatList
         data={beneficiosFiltrados}
         keyExtractor={(item) => item.id}

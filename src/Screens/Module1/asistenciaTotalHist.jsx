@@ -1,40 +1,55 @@
+//---------------------------------------------------------------------------------------------------------------
+// Descripción general:
+// Este componente de React Native muestra una lista de todos los estudiantes postulados.
+// Permite aplicar filtros por estado, carrera, nivel y búsqueda por nombre.
+// Se conecta a un backend mediante Axios para obtener los datos.
+//---------------------------------------------------------------------------------------------------------------
+
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
-  StyleSheet,
   TextInput,
   TouchableOpacity
 } from 'react-native';
-import { Button, Avatar, Menu, Provider } from 'react-native-paper';
+import { Button, Avatar, Menu, Provider } from 'react-native-paper'; // Componentes estilizados
 import { useNavigation } from '@react-navigation/native';
-import { styles } from '../../Style/Module1/asistenciaTotalHist';
+import { styles } from '../../Style/Module1/asistenciaTotalHist'; // Estilos personalizados
 import { useRoute } from '@react-navigation/native';
-import URL from '../../Services/url';
-import axios from 'axios';
+import URL from '../../Services/url'; // URL base
+import axios from 'axios'; // Cliente HTTP
 
-
+//---------------------------------------------------------------------------------------------------------------
+// Componente principal - Lista de Estudiantes
+//---------------------------------------------------------------------------------------------------------------
 export default function ListaEstudiantes() {
-  const [estadoFiltro, setEstadoFiltro] = useState('');
-  const [busqueda, setBusqueda] = useState('');
-  const [menuCarreraVisible, setMenuCarreraVisible] = useState(false);
-  const [menuNivelVisible, setMenuNivelVisible] = useState(false);
-  const [carreraSeleccionada, setCarreraSeleccionada] = useState('');
-  const [nivelSeleccionado, setNivelSeleccionado] = useState('');
-  const [estudiantes, setEstudiantesData] = useState([]);
-  const navigator = useNavigation();
-  const route = useRoute();
-  const { userId } = route.params;
+  // Estados principales
+  const [estadoFiltro, setEstadoFiltro] = useState(''); // Estado del filtro por estado (activo/inactivo)
+  const [busqueda, setBusqueda] = useState(''); // Estado para búsqueda por nombre
+  const [menuCarreraVisible, setMenuCarreraVisible] = useState(false); // Menú carrera
+  const [menuNivelVisible, setMenuNivelVisible] = useState(false); // Menú nivel
+  const [carreraSeleccionada, setCarreraSeleccionada] = useState(''); // Filtro carrera
+  const [nivelSeleccionado, setNivelSeleccionado] = useState(''); // Filtro nivel
+  const [estudiantes, setEstudiantesData] = useState([]); // Lista de estudiantes
+  const navigator = useNavigation(); // Hook de navegación
+  const route = useRoute(); // Hook de ruta
+  const { userId } = route.params; // Obtener userId de parámetros
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Hook para cargar los datos de los estudiantes al montar el componente
+  //-------------------------------------------------------------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       const data = await handleInformacion();
-      setEstudiantesData(data); // Actualizar el estado con los datos obtenidos
+      setEstudiantesData(data);
     };
     fetchData();
-  }, []); // Ejecutar la función al montar el componente
+  }, []);
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Función para obtener la información de los estudiantes postulados
+  //-------------------------------------------------------------------------------------------------------------
   const handleInformacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -43,7 +58,7 @@ export default function ListaEstudiantes() {
       });
 
       const data = response.data;
-      console.log('Datos obtenidos:', data); // Verifica los datos obtenidos
+      console.log('Datos obtenidos:', data);
 
       if (response.status === 200) {
         return data.estudiantes || [];
@@ -55,12 +70,19 @@ export default function ListaEstudiantes() {
       console.error('Error al realizar la solicitud:', error);
       return [];
     }
-  
   };
 
-  const carreras = useMemo(() => [...new Set(estudiantes.map(e => e.carrera))], []);
-  const niveles = useMemo(() => [...new Set(estudiantes.map(e => e.nivel))], []);
+  //-------------------------------------------------------------------------------------------------------------
+  // Memorizar lista de carreras únicas disponibles para el menú de filtro
+  //-------------------------------------------------------------------------------------------------------------
+  const carreras = useMemo(() => [...new Set(estudiantes.map(e => e.carrera))], [estudiantes]);
 
+  // Memorizar lista de niveles únicos disponibles para el menú de filtro
+  const niveles = useMemo(() => [...new Set(estudiantes.map(e => e.nivel))], [estudiantes]);
+
+  //-------------------------------------------------------------------------------------------------------------
+  // Aplicar filtros combinados de estado, nombre, carrera y nivel
+  //-------------------------------------------------------------------------------------------------------------
   const estudiantesFiltrados = estudiantes.filter(e => {
     return (
       (estadoFiltro === '' || e.estado === estadoFiltro) &&
@@ -70,6 +92,9 @@ export default function ListaEstudiantes() {
     );
   });
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado de la pantalla de estudiantes
+  //-------------------------------------------------------------------------------------------------------------
   return (
     <Provider>
       <ScrollView style={styles.container}>
@@ -81,7 +106,7 @@ export default function ListaEstudiantes() {
           <Button onPress={() => setEstadoFiltro('Inactivo')} style={styles.azulBtn} labelStyle={styles.blancoTexto}>Inactivos</Button>
         </View>
 
-        {/* Búsqueda */}
+        {/* Barra de búsqueda por nombre */}
         <TextInput
           placeholder="Buscar por nombre..."
           style={styles.searchInput}
@@ -89,8 +114,9 @@ export default function ListaEstudiantes() {
           onChangeText={setBusqueda}
         />
 
-        {/* Filtros de carrera y nivel en una fila */}
+        {/* Filtros de carrera y nivel */}
         <View style={styles.filaMenus}>
+          {/* Menú de filtro por carrera */}
           <View style={styles.menuContainer}>
             <Menu
               visible={menuCarreraVisible}
@@ -113,6 +139,7 @@ export default function ListaEstudiantes() {
             </Menu>
           </View>
 
+          {/* Menú de filtro por nivel académico */}
           <View style={styles.menuContainer}>
             <Menu
               visible={menuNivelVisible}
@@ -136,12 +163,13 @@ export default function ListaEstudiantes() {
           </View>
         </View>
 
-        {/* Títulos */}
+        {/* Títulos de sección */}
         <Text style={styles.titulo}>TODOS LOS ESTUDIANTES POSTULADOS</Text>
         <Text style={styles.subtitulo}>Gestión de todos los estudiantes</Text>
 
-        {/* Tabla */}
+        {/* Tabla de datos */}
         <View style={styles.tabla}>
+          {/* Encabezados */}
           <View style={styles.filaEncabezado}>
             <Text style={styles.encabezado}>Nombre</Text>
             <Text style={styles.encabezado}>Carrera</Text>
@@ -152,6 +180,7 @@ export default function ListaEstudiantes() {
             <Text style={styles.encabezado}>Acciones</Text>
           </View>
 
+          {/* Filas dinámicas */}
           {estudiantesFiltrados.map((est, index) => (
             <View key={index} style={styles.fila}>
               <Text style={styles.celda}>{est.nombre}</Text>
@@ -159,13 +188,23 @@ export default function ListaEstudiantes() {
               <Text style={styles.celda}>{est.nivel}</Text>
               <Text style={styles.celda}>{est.ponderado}</Text>
               <Text style={styles.celda}>{est.cursosAprobados}</Text>
-              <Text style={[styles.estado, est.estado === 'Aprobado' ? styles.estadoAprobado : styles.estadoInactivo]}>{est.estado}</Text>
-              <TouchableOpacity style={styles.botonDetalles} onPress={() => navigator.navigate("perfilEstudiante", { userId: est.id })}>
+              <Text style={[
+                styles.estado, 
+                est.estado === 'Aprobado' ? styles.estadoAprobado : styles.estadoInactivo
+              ]}>
+                {est.estado}
+              </Text>
+              {/* Botón para ver detalles del estudiante */}
+              <TouchableOpacity
+                style={styles.botonDetalles}
+                onPress={() => navigator.navigate("perfilEstudiante", { userId: est.id })}
+              >
                 <Text style={styles.textoDetalles}>Detalles</Text>
               </TouchableOpacity>
             </View>
           ))}
         </View>
+
       </ScrollView>
     </Provider>
   );
