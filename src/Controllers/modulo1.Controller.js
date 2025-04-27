@@ -1,10 +1,20 @@
+//---------------------------------------------------------------------------------------------------------------
+// Archivo: administracionEscuela.js
+// Descripción general: 
+// Este archivo contiene las funciones para la administración de usuarios tipo Escuela, Departamento y Admin.
+// Permite consultar, actualizar perfiles, gestionar cursos, ofertas académicas, postulaciones y pagos de asistencia.
+//---------------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------------------------------
+// Importaciones de correo electrónico y conexión a Firestore
+//---------------------------------------------------------------------------------------------------------------
 import { transporter } from "../Services/emails.js";
 import { db, app } from "../Services/fireBaseConnect.js";
 import { collection, getDocs, updateDoc, doc, addDoc } from "firebase/firestore";
 
-
-//PARA ADIMINSTRACION DE PERFIL
-
+//---------------------------------------------------------------------------------------------------------------
+// Función que obtiene la información del perfil de un administrador
+//---------------------------------------------------------------------------------------------------------------
 export const informacionAdmin = async (req, res) => {
     const { userId } = req.query;
     try {
@@ -13,27 +23,30 @@ export const informacionAdmin = async (req, res) => {
       for (const doc of querySnapshot.docs) {
         const datos = doc.data();
         if (doc.id === userId) {
-          console.log("InformacionDepatamento:", datos);
-          return res.status(200).json({datos});
+          console.log("InformacionDepartamento:", datos);
+          return res.status(200).json({ datos });
         }
       }
-  
+
       console.log("Correo o contraseña incorrectos.");
       return res.status(400).json({ error: "Correo o contraseña incorrectos." });
-  
+
     } catch (error) {
       console.error("Error al validar credenciales:", error);
       return res.status(401).json({ error: "Error al validar credenciales" });
     }
-  }
+}
 
+//---------------------------------------------------------------------------------------------------------------
+// Función para actualizar información de un administrador (carrera y facultad)
+//---------------------------------------------------------------------------------------------------------------
 export const actualizarInfoAdmin = async (req, res) => {
     const { userId, nombre, facultad } = req.body;
     try {
       console.log("userId:", userId);
-      const docRef = doc(db, 'Usuarios', userId); // 'Usuarios' es la colección, y userId es el ID del documento
+      const docRef = doc(db, 'Usuarios', userId); // Referencia al documento del usuario
   
-      // Actualiza solo los campos que deseas modificar
+      // Actualizar solo los campos carrera y facultad
       await updateDoc(docRef, {
         carrera: nombre,
         facultad: facultad
@@ -41,16 +54,16 @@ export const actualizarInfoAdmin = async (req, res) => {
   
       console.log("Documento actualizado correctamente");
       return res.status(200).json({ message: "Documento actualizado correctamente" });
-
     }
     catch (error) {
       console.error("Error al validar credenciales:", error);
       return res.status(401).json({ error: "Error al validar credenciales" });
     }
-  }
+}
 
-
-//PARA EL INFOESCUELA 
+//---------------------------------------------------------------------------------------------------------------
+// Función que obtiene la información del perfil de una escuela o departamento
+//---------------------------------------------------------------------------------------------------------------
 export const informacionEscuela = async (req, res) => {
     const { userId } = req.query;
     try {
@@ -59,30 +72,32 @@ export const informacionEscuela = async (req, res) => {
       for (const doc of querySnapshot.docs) {
         const datos = doc.data();
         if (doc.id === userId) {
-          console.log("InformacionDepatamento:", datos);
-          return res.status(200).json({datos});
+          console.log("InformacionDepartamento:", datos);
+          return res.status(200).json({ datos });
         }
       }
-  
+
       console.log("Correo o contraseña incorrectos.");
       return res.status(400).json({ error: "Correo o contraseña incorrectos." });
-  
+
     } catch (error) {
       console.error("Error al validar credenciales:", error);
       return res.status(401).json({ error: "Error al validar credenciales" });
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------
+// Función que actualiza la información de una escuela o departamento
+//---------------------------------------------------------------------------------------------------------------
 export const actualizarInfoEscuela = async (req, res) => {
     const { userId, formData } = req.body;
     try {
-
       console.log("userId:", userId);
       console.log("formData:", formData);
-      // Obtén la referencia al documento del usuario en la colección "Usuarios"
-      const docRef = doc(db, 'Usuarios', userId); // 'Usuarios' es la colección, y userId es el ID del documento
-  
-      // Actualiza solo los campos que deseas modificar
+
+      const docRef = doc(db, 'Usuarios', userId);
+
+      // Actualizar el documento con el formData recibido
       await updateDoc(docRef, formData);
   
       console.log("Documento actualizado correctamente");
@@ -92,7 +107,7 @@ export const actualizarInfoEscuela = async (req, res) => {
       console.error("Error al actualizar el documento:", error);
       return res.status(400).json({ error: "Error al actualizar el documento" });
     }
-  };
+}
   
 
 //PARA EL CURSOSESCUELA

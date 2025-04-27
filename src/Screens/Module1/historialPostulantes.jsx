@@ -1,34 +1,48 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+//---------------------------------------------------------------------------------------------------------------
+// Descripción general:
+// Este componente muestra la lista de estudiantes postulados a oportunidades.
+// Permite buscar por nombre, filtrar por estado, carrera y nivel académico, 
+// y navegar a la pantalla de perfil detallado de cada estudiante.
+//---------------------------------------------------------------------------------------------------------------
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
-import { styles } from '../../Style/Module1/historialPostulantes';
-import { useRoute } from '@react-navigation/native';
-import URL from '../../Services/url';
-import axios from 'axios';
-import { useEffect } from 'react';
+import { styles } from '../../Style/Module1/historialPostulantes'; // Estilos personalizados
+import URL from '../../Services/url'; // URL base del servidor
+import axios from 'axios'; // Cliente HTTP
 
-
+//---------------------------------------------------------------------------------------------------------------
+// Componente principal - EstudiantesPostuladosScreen
+//---------------------------------------------------------------------------------------------------------------
 export default function EstudiantesPostuladosScreen() {
-  const [filtro, setFiltro] = useState('Todos');
-  const [search, setSearch] = useState('');
-  const [carreraFilter, setCarreraFilter] = useState('');
-  const [nivelFilter, setNivelFilter] = useState('');
-  const [estudiantesData, setEstudiantesData] = useState([]);
-  
-  const navigator = useNavigation();
-  const route = useRoute();
-  const { userId } = route.params;
+  // Estados principales
+  const [filtro, setFiltro] = useState('Todos'); // Estado del filtro por aprobación
+  const [search, setSearch] = useState(''); // Búsqueda por nombre
+  const [carreraFilter, setCarreraFilter] = useState(''); // Filtro por carrera
+  const [nivelFilter, setNivelFilter] = useState(''); // Filtro por nivel académico
+  const [estudiantesData, setEstudiantesData] = useState([]); // Datos de estudiantes postulados
 
+  const navigator = useNavigation(); // Hook para navegación
+  const route = useRoute(); // Hook para obtener parámetros de navegación
+  const { userId } = route.params; // userId de la escuela o departamento
+
+  //-------------------------------------------------------------------------------------------------------------
+  // Hook para cargar los datos de los estudiantes cuando se monta el componente
+  //-------------------------------------------------------------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       const data = await handleInformacion();
-      setEstudiantesData(data); // Actualizar el estado con los datos obtenidos
+      setEstudiantesData(data);
     };
     fetchData();
-  }, []); // Ejecutar la función al montar el componente
+  }, []);
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Función para obtener estudiantes postulados desde el backend
+  //-------------------------------------------------------------------------------------------------------------
   const handleInformacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
@@ -36,11 +50,9 @@ export default function EstudiantesPostuladosScreen() {
         params: { userId }
       });
 
-      const data = response.data;
-      console.log('Datos obtenidos:', data); // Verifica los datos obtenidos
-
       if (response.status === 200) {
-        return data.estudiantes || [];
+        console.log('Datos obtenidos:', response.data);
+        return response.data.estudiantes || [];
       } else {
         console.error('Error al obtener los datos:', response.statusText);
         return [];
@@ -49,26 +61,33 @@ export default function EstudiantesPostuladosScreen() {
       console.error('Error al realizar la solicitud:', error);
       return [];
     }
-  
   };
 
-  // Filtrar por nombre, estado, carrera y nivel
+  //-------------------------------------------------------------------------------------------------------------
+  // Aplicar filtros de búsqueda, estado, carrera y nivel
+  //-------------------------------------------------------------------------------------------------------------
   const filteredData = estudiantesData.filter((estudiante) => {
     const matchesEstado = filtro === 'Todos' || estudiante.estado === filtro;
     const matchesCarrera = carreraFilter === '' || estudiante.carrera === carreraFilter;
     const matchesNivel = nivelFilter === '' || estudiante.nivel === nivelFilter;
     const matchesSearch = estudiante.nombre.toLowerCase().includes(search.toLowerCase());
-
     return matchesEstado && matchesCarrera && matchesNivel && matchesSearch;
   });
 
-  // Obtener las carreras y niveles únicos
+  // Obtener listas únicas para mostrar en los pickers
   const carreras = [...new Set(estudiantesData.map((item) => item.carrera))];
   const niveles = [...new Set(estudiantesData.map((item) => item.nivel))];
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado principal de la pantalla
+  //-------------------------------------------------------------------------------------------------------------
   return (
     <View style={styles.container}>
+      
+      {/* Encabezado */}
       <Text style={styles.logo}>TEC | Tecnológico de Costa Rica</Text>
+
+      {/* Botones de filtro por estado */}
       <View style={styles.filterRow}>
         {['Todos', 'Aprobado', 'Activo', 'Inactivo'].map((item) => (
           <TouchableOpacity
@@ -80,16 +99,22 @@ export default function EstudiantesPostuladosScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* Barra de búsqueda y selección de filtros adicionales */}
       <View style={styles.controlsRow}>
         <Text>Show</Text>
         <View style={styles.entriesBox}><Text>10</Text></View>
         <Text>entries</Text>
+
+        {/* Búsqueda por nombre */}
         <TextInput
           style={styles.searchInput}
           placeholder="Search by name..."
           value={search}
           onChangeText={setSearch}
         />
+
+        {/* Filtro por carrera */}
         <View style={styles.filterDropdowns}>
           <Text>Carrera</Text>
           <Picker
@@ -103,6 +128,7 @@ export default function EstudiantesPostuladosScreen() {
             ))}
           </Picker>
 
+          {/* Filtro por nivel académico */}
           <Text>Nivel académico</Text>
           <Picker
             selectedValue={nivelFilter}
@@ -115,9 +141,12 @@ export default function EstudiantesPostuladosScreen() {
             ))}
           </Picker>
         </View>
+
+        {/* Ícono de filtros */}
         <Ionicons name="filter-outline" size={24} color="black" />
       </View>
 
+      {/* Títulos de tabla */}
       <Text style={styles.header}>TODOS LOS ESTUDIANTES POSTULADOS</Text>
       <Text style={styles.subheader}>Gestión de todos los estudiantes</Text>
 
@@ -127,6 +156,7 @@ export default function EstudiantesPostuladosScreen() {
         ))}
       </View>
 
+      {/* Lista de estudiantes filtrados */}
       <FlatList
         data={filteredData}
         keyExtractor={(item) => item.id}
@@ -138,7 +168,12 @@ export default function EstudiantesPostuladosScreen() {
             <Text style={styles.cell}>{item.ponderado}</Text>
             <Text style={styles.cell}>{item.cursosAprobados}</Text>
             <Text style={[styles.estado, { backgroundColor: '#D6F5E3', color: '#2B8C58' }]}>{item.estado}</Text>
-            <TouchableOpacity style={styles.detailsButton} onPress={() => navigator.navigate("perfilEstudiante", { userId: item.id })}>
+
+            {/* Botón para ver detalles del estudiante */}
+            <TouchableOpacity
+              style={styles.detailsButton}
+              onPress={() => navigator.navigate("perfilEstudiante", { userId: item.id })}
+            >
               <Text style={styles.detailsButtonText}>Detalles</Text>
             </TouchableOpacity>
           </View>

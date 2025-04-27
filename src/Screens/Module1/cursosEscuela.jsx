@@ -1,73 +1,75 @@
-import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+//---------------------------------------------------------------------------------------------------------------
+// Descripción general:
+// Este componente de React Native muestra una lista de cursos y programas de la escuela.
+// Permite filtrar por tipo (curso/programa), búsqueda por nombre y controlar la cantidad de elementos mostrados.
+// Se conecta al backend para traer datos usando Axios.
+//---------------------------------------------------------------------------------------------------------------
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native'; // Hooks de navegación y rutas
 import axios from 'axios';
-import { useEffect } from 'react';
-import { useRoute } from '@react-navigation/native';
-import URL from '../../Services/url';
+import URL from '../../Services/url'; // URL base del servidor
+import { styles } from '../../Style/Module1/cursoEscuela'; // Estilos personalizados
 
-
-import { styles } from '../../Style/Module1/cursoEscuela';
-
-
+//---------------------------------------------------------------------------------------------------------------
+// Componente principal - Visualización de cursos y programas de la escuela
+//---------------------------------------------------------------------------------------------------------------
 export default function App() {
-  const [busqueda, setBusqueda] = useState('');
-  const [vista, setVista] = useState('todos');
-  const [cantidadMostrar, setCantidadMostrar] = useState(10);
-  const [dataApi, setDataApi] = useState([]);
-  const navigator = useNavigation();
-  const route = useRoute();
-  const { userId } = route.params;
+  // Estados principales
+  const [busqueda, setBusqueda] = useState(''); // Texto de búsqueda
+  const [vista, setVista] = useState('todos'); // Vista actual: todos, curso o programa
+  const [cantidadMostrar, setCantidadMostrar] = useState(10); // Cantidad de elementos a mostrar
+  const [dataApi, setDataApi] = useState([]); // Datos obtenidos de la API
 
+  const navigator = useNavigation(); // Hook de navegación
+  const route = useRoute();
+  const { userId } = route.params; // Extraer userId recibido como parámetro
+
+  //-------------------------------------------------------------------------------------------------------------
+  // Hook para obtener información al montar el componente
+  //-------------------------------------------------------------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       const datos = await handleInformacion();
       if (datos) {
-        setDataApi(datos);
+        setDataApi(datos); // Guardar datos fusionados de cursos y programas
       }
     };
-
     fetchData();
   }, []);
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Función para obtener cursos y programas desde el servidor
+  //-------------------------------------------------------------------------------------------------------------
   const handleInformacion = async () => {
     try {
       const apiUrl = `${URL}:3000`;
-      const response = await axios.get(`${apiUrl}/escuelas/cursosEscuela`, {
-        params: { userId },
-      });
-
-      const data = response.data;
+      const response = await axios.get(`${apiUrl}/escuelas/cursosEscuela`, { params: { userId } });
 
       if (response.status === 200) {
-        const cursos = data.cursos || [];
-        const programas = data.programas || [];
+        const cursos = response.data.cursos || [];
+        const programas = response.data.programas || [];
 
+        // Fusionar cursos y programas en un solo arreglo
         const fusion = [
-          ...cursos.map((curso) => ({
+          ...cursos.map(curso => ({
             id: curso.id,
             nombre: curso.nombre,
             estudiantes: curso.estudiantes?.length || 0,
             profesor: curso.profesor?.nombre || 'Sin nombre',
             semestre: curso.semestre,
-            tipo: curso.tipo,
+            tipo: curso.tipo
           })),
-          ...programas.map((programa) => ({
+          ...programas.map(programa => ({
             id: programa.id,
             nombre: programa.nombre,
-            estudiantes: 0, // o usar cantidad real si se tiene
-            profesor: '-', // o campo válido si aplica
+            estudiantes: 0, // Podría cambiarse si se tiene dato real
+            profesor: '-', // No aplica profesor en programa
             semestre: programa.semestre || '',
-            tipo: programa.tipo,
-          })),
+            tipo: programa.tipo
+          }))
         ];
-
         return fusion;
       } else {
         console.error('Error en la respuesta:', response.statusText);
@@ -81,22 +83,29 @@ export default function App() {
     }
   };
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Memoización para aplicar filtros de búsqueda y tipo de vista
+  //-------------------------------------------------------------------------------------------------------------
   const filtrado = useMemo(() => {
     const datosFiltrados = dataApi.filter((item) => {
       const coincideBusqueda = item.nombre.toLowerCase().includes(busqueda.toLowerCase());
       const coincideVista = vista === 'todos' || item.tipo === vista;
       return coincideBusqueda && coincideVista;
     });
-    return datosFiltrados.slice(0, cantidadMostrar);
+    return datosFiltrados.slice(0, cantidadMostrar); // Limitar cantidad mostrada
   }, [busqueda, vista, cantidadMostrar, dataApi]);
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Definición del encabezado de la lista
+  //-------------------------------------------------------------------------------------------------------------
   const header = useMemo(
     () => (
       <>
         <Text style={styles.header}>Programas de la escuela</Text>
 
+        {/* Barra de búsqueda y cantidad de entradas */}
         <View style={styles.searchRow}>
-          <Text style={styles.label}>Show</Text>
+          <Text style={styles.label}>Mostrar</Text>
           <TextInput
             style={styles.entriesBox}
             keyboardType="numeric"
@@ -108,12 +117,13 @@ export default function App() {
           />
           <TextInput
             style={styles.search}
-            placeholder="Search..."
+            placeholder="Buscar..."
             value={busqueda}
             onChangeText={setBusqueda}
           />
         </View>
 
+        {/* Botones de selección de tipo de vista */}
         <View style={styles.toggleRow}>
           <TouchableOpacity
             style={vista === 'todos' ? styles.toggleButtonActive : styles.toggleButton}
@@ -121,12 +131,14 @@ export default function App() {
           >
             <Text style={vista === 'todos' ? styles.toggleTextActive : styles.toggleText}>Todos</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={vista === 'curso' ? styles.toggleButtonActive : styles.toggleButton}
             onPress={() => setVista('curso')}
           >
             <Text style={vista === 'curso' ? styles.toggleTextActive : styles.toggleText}>Cursos</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={vista === 'programa' ? styles.toggleButtonActive : styles.toggleButton}
             onPress={() => setVista('programa')}
@@ -139,6 +151,9 @@ export default function App() {
     [busqueda, vista, cantidadMostrar]
   );
 
+  //-------------------------------------------------------------------------------------------------------------
+  // Renderizado del FlatList con los datos filtrados
+  //-------------------------------------------------------------------------------------------------------------
   return (
     <FlatList
       ListHeaderComponent={header}
